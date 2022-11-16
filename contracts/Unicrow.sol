@@ -12,9 +12,8 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 import "./interfaces/IUnicrow.sol";
 import "./interfaces/IUnicrowClaim.sol";
-import "./UnicrowDispute.sol";
 import "./interfaces/IUnicrowArbitrator.sol";
-import "./interfaces/ICrowRewards.sol";
+import "./UnicrowDispute.sol";
 import "./UnicrowTypes.sol";
 
 /// @title The primary Unicrow contract

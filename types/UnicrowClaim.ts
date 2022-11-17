@@ -18,24 +18,26 @@ import { FunctionFragment, Result, EventFragment } from "@ethersproject/abi";
 import { Listener, Provider } from "@ethersproject/providers";
 import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 
-export type ClaimEventStruct = {
-  escrowId: BigNumberish;
-  amount: [
-    BigNumberish,
-    BigNumberish,
-    BigNumberish,
-    BigNumberish,
-    BigNumberish
-  ];
-};
+export declare namespace UnicrowClaim {
+  export type ClaimEventStruct = {
+    escrowId: BigNumberish;
+    amount: [
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish
+    ];
+  };
 
-export type ClaimEventStructOutput = [
-  BigNumber,
-  [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber]
-] & {
-  escrowId: BigNumber;
-  amount: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
-};
+  export type ClaimEventStructOutput = [
+    BigNumber,
+    [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber]
+  ] & {
+    escrowId: BigNumber;
+    amount: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
+  };
+}
 
 export interface UnicrowClaimInterface extends utils.Interface {
   contractName: "UnicrowClaim";
@@ -135,15 +137,15 @@ export interface UnicrowClaimInterface extends utils.Interface {
 }
 
 export type ClaimEvent = TypedEvent<
-  [ClaimEventStructOutput[]],
-  { escrows: ClaimEventStructOutput[] }
+  [UnicrowClaim.ClaimEventStructOutput[]],
+  { escrows: UnicrowClaim.ClaimEventStructOutput[] }
 >;
 
 export type ClaimEventFilter = TypedEventFilter<ClaimEvent>;
 
 export type SingleClaimEvent = TypedEvent<
-  [ClaimEventStructOutput],
-  { escrow: ClaimEventStructOutput }
+  [UnicrowClaim.ClaimEventStructOutput],
+  { escrow: UnicrowClaim.ClaimEventStructOutput }
 >;
 
 export type SingleClaimEventFilter = TypedEventFilter<SingleClaimEvent>;

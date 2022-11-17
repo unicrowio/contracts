@@ -61,32 +61,29 @@ export type EscrowStructOutput = [
   amount: BigNumber;
 };
 
-export type DepositInputStruct = {
-  buyer: string;
+export type EscrowInputStruct = {
   seller: string;
   marketplace: string;
-  currency: string;
   marketplaceFee: BigNumberish;
+  currency: string;
   challengePeriod: BigNumberish;
   challengeExtension: BigNumberish;
   amount: BigNumberish;
 };
 
-export type DepositInputStructOutput = [
-  string,
-  string,
+export type EscrowInputStructOutput = [
   string,
   string,
   number,
+  string,
   number,
   number,
   BigNumber
 ] & {
-  buyer: string;
   seller: string;
   marketplace: string;
-  currency: string;
   marketplaceFee: number;
+  currency: string;
   challengePeriod: number;
   challengeExtension: number;
   amount: BigNumber;
@@ -97,7 +94,7 @@ export interface IUnicrowInterface extends utils.Interface {
   functions: {
     "challenge(uint256,uint16[4],int16[2],uint64,uint64)": FunctionFragment;
     "getEscrow(uint256)": FunctionFragment;
-    "pay((address,address,address,address,uint16,uint32,uint32,uint256),address,uint16)": FunctionFragment;
+    "pay((address,address,uint16,address,uint32,uint32,uint256),address,uint16)": FunctionFragment;
     "refund(uint256)": FunctionFragment;
     "release(uint256)": FunctionFragment;
     "setClaimed(uint256)": FunctionFragment;
@@ -123,7 +120,7 @@ export interface IUnicrowInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "pay",
-    values: [DepositInputStruct, string, BigNumberish]
+    values: [EscrowInputStruct, string, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "refund",
@@ -226,7 +223,7 @@ export interface IUnicrow extends BaseContract {
     ): Promise<ContractTransaction>;
 
     pay(
-      data: DepositInputStruct,
+      input: EscrowInputStruct,
       arbitrator: string,
       arbitratorFee: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
@@ -291,7 +288,7 @@ export interface IUnicrow extends BaseContract {
   ): Promise<ContractTransaction>;
 
   pay(
-    data: DepositInputStruct,
+    input: EscrowInputStruct,
     arbitrator: string,
     arbitratorFee: BigNumberish,
     overrides?: PayableOverrides & { from?: string | Promise<string> }
@@ -356,7 +353,7 @@ export interface IUnicrow extends BaseContract {
     ): Promise<EscrowStructOutput>;
 
     pay(
-      data: DepositInputStruct,
+      input: EscrowInputStruct,
       arbitrator: string,
       arbitratorFee: BigNumberish,
       overrides?: CallOverrides
@@ -418,7 +415,7 @@ export interface IUnicrow extends BaseContract {
     ): Promise<BigNumber>;
 
     pay(
-      data: DepositInputStruct,
+      input: EscrowInputStruct,
       arbitrator: string,
       arbitratorFee: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
@@ -484,7 +481,7 @@ export interface IUnicrow extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     pay(
-      data: DepositInputStruct,
+      input: EscrowInputStruct,
       arbitrator: string,
       arbitratorFee: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }

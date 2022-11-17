@@ -3,6 +3,9 @@ import "@typechain/hardhat";
 import "@nomiclabs/hardhat-ethers";
 import "@nomiclabs/hardhat-waffle";
 import "hardhat-gas-reporter";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -19,6 +22,7 @@ task("accounts", "Prints the list of accounts", async (_, hre) => {
 
 export default {
   solidity: "0.8.7",
+  defaultNetwork: "hardhat",
   settings: {
     optimizer: {
       enabled: true,
@@ -29,10 +33,10 @@ export default {
     localhost: {
       url: "http://localhost:8545",
     },
-    mainnet: {
-      url: process.env.NODE_URL,
-      accounts: [process.env.PRIVATE_KEY as string],
-    }
+    // mainnet: {
+    //   url: process.env.NODE_URL,
+    //   accounts: [process.env.PRIVATE_KEY as string],
+    // }
   },
   gasreporter: {
     currency: "USD",

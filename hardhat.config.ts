@@ -29,6 +29,10 @@ export default {
     localhost: {
       url: "http://localhost:8545",
     },
+    mainnet: {
+      url: process.env.NODE_URL,
+      accounts: [process.env.PRIVATE_KEY as string],
+    }
   },
   gasreporter: {
     currency: "USD",

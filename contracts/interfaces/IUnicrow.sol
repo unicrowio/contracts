@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.7;
 
 import "../UnicrowTypes.sol";
 
@@ -62,14 +62,14 @@ interface IUnicrow {
     ) external;
 
   /**
-   * @dev Calculating the final splits (incl. fees) based on how the payment is concluded.
-   * @dev The splits are not expected to equal 100% in total. Buyer and seller splits should equal 100 based
+   * Calculating the final splits (incl. fees) based on how the payment is concluded.
+   * @dev The currentSplits are not expected to equal 100% in total. Buyer and seller splits should equal 100 based
    * @dev on how the payment is settled, other splits represent fees which will get reduced and deducted accordingly
    * @param currentSplit Current splits in bips
    */
   function splitCalculation(
-    uint16[5] memory currentSplit
-  ) external returns(uint16[] memory);
+    uint16[5] calldata currentSplit
+  ) external returns(uint16[4] memory);
 
   /**
    * @dev Get the escrow data (without arbitrator or settlement information)

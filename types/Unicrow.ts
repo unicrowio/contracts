@@ -458,7 +458,7 @@ export interface Unicrow extends BaseContract {
         BigNumberish
       ],
       overrides?: CallOverrides
-    ): Promise<[number[]]>;
+    ): Promise<[[number, number, number, number]]>;
 
     unicrowArbitrator(overrides?: CallOverrides): Promise<[string]>;
 
@@ -547,7 +547,7 @@ export interface Unicrow extends BaseContract {
       BigNumberish
     ],
     overrides?: CallOverrides
-  ): Promise<number[]>;
+  ): Promise<[number, number, number, number]>;
 
   unicrowArbitrator(overrides?: CallOverrides): Promise<string>;
 
@@ -630,7 +630,7 @@ export interface Unicrow extends BaseContract {
         BigNumberish
       ],
       overrides?: CallOverrides
-    ): Promise<number[]>;
+    ): Promise<[number, number, number, number]>;
 
     unicrowArbitrator(overrides?: CallOverrides): Promise<string>;
 

@@ -306,7 +306,8 @@ describe("Unicrow", function () {
       ).to.be.revertedWith("1-009");
     });
 
-    it("should not be able to challenge sequencelly", async function () {
+
+    it("should not be able to challenge sequencelly before challenge period starts", async function () {
       await fakeTokenContract.connect(buyer).approve(unicrowContract.address, escrowValue);
 
       await unicrowContract.connect(buyer).pay(
@@ -319,6 +320,28 @@ describe("Unicrow", function () {
       );
 
       await unicrowDisputeContract.connect(buyer).challenge(escrowId);
+
+      await expect(
+        unicrowDisputeContract.connect(buyer).challenge(escrowId)
+      ).to.be.revertedWith("1-019");
+    });
+
+    it("should not be able to challenge sequencelly after challenge period starts", async function () {
+      await fakeTokenContract.connect(buyer).approve(unicrowContract.address, escrowValue);
+
+      await unicrowContract.connect(buyer).pay(
+        {
+          //@ts-ignore
+          ...payCommon,
+        },
+        ZERO_ADDRESS,
+        0
+      );
+
+      await unicrowDisputeContract.connect(buyer).challenge(escrowId);
+
+      await network.provider.send("evm_increaseTime", [400]);
+      await network.provider.send("evm_mine");
 
       await expect(
         unicrowDisputeContract.connect(buyer).challenge(escrowId)

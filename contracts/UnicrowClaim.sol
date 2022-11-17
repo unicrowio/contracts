@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.7;
 
 import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
@@ -22,10 +22,12 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
 
     /// Reference to the main escrow contract (immutable)
     Unicrow public unicrow;
+
     /// Reference to the Arbitrator contract (immutable)
-    UnicrowArbitrator public unicrowArbitrator;
+    UnicrowArbitrator public immutable unicrowArbitrator;
 
     IUnicrowClaimRewards public crowRewards;
+
     IUnicrowStakingRewards public stakingRewards;
 
     /// Destination address of the protocol fee (governed)
@@ -76,7 +78,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
     }
 
     /// @inheritdoc IUnicrowClaim
-    function claim(uint[] memory escrows) external override payable nonReentrant {
+    function claim(uint[] calldata escrows) external override payable nonReentrant {
 
         ClaimEvent[] memory events = new ClaimEvent[](escrows.length);
 
@@ -90,18 +92,18 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
 
             require(
                 (escrow.consensus[WHO_SELLER] >= 1 &&
-                    escrow.consensus[WHO_BUYER] > 0) ||
+                    escrow.consensus[WHO_BUYER] >= 1) ||
                     block.timestamp > escrow.challengePeriodEnd,
                 "0-006"
             );
 
-            uint16[] memory calculatedSplits = calculateSplits(
+            uint16[4] memory calculatedSplits = calculateSplits(
                 arbitratorData.arbitratorFee,
                 arbitratorData.arbitrated,
                 escrow
             );
 
-            uint256[] memory payments = calculatePayments(
+            uint256[5] memory payments = calculatePayments(
                 escrow.amount,
                 calculatedSplits,
                 escrow.split[WHO_SELLER],
@@ -120,11 +122,11 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
             claimPayments(escrows[i], payments, addresses, escrow.currency);
 
             if(address(crowRewards) != address(0)){
-                crowRewards.distribute(escrow.buyer, escrow.seller, payments[WHO_CROW]);
+                crowRewards.distribute(escrow.buyer, escrow.seller, payments[WHO_UNICROW]);
             }
 
             if(address(stakingRewards) != address(0)){
-                stakingRewards.collectFee(escrow.currency, payments[WHO_CROW]);
+                stakingRewards.collectFee(escrow.currency, payments[WHO_UNICROW]);
             }
 
             events[i] = ClaimEvent(escrows[i], payments);
@@ -140,22 +142,26 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
         Arbitrator memory arbitratorData = unicrowArbitrator
                 .getArbitratorData(escrowId);
 
+        // Check that the payment hasn't been claimed yet
         require(escrow.claimed == 0, "0-005");
 
+        // Make sure both parties consented to releasing the payment from the escrow
         require(
             (escrow.consensus[WHO_SELLER] >= 1 &&
-                escrow.consensus[WHO_BUYER] > 0) ||
+                escrow.consensus[WHO_BUYER] >= 1) ||
                 block.timestamp > escrow.challengePeriodEnd,
             "0-006"
         );
 
-        uint16[] memory calculatedSplits = calculateSplits(
+        // Calculate final splits (in bips) from gross splits
+        uint16[4] memory calculatedSplits = calculateSplits(
             arbitratorData.arbitratorFee,
             arbitratorData.arbitrated,
             escrow
         );
 
-        uint256[] memory payments = calculatePayments(
+        // Calculate amounts to be sent in the token
+        uint256[5] memory payments = calculatePayments(
             escrow.amount,
             calculatedSplits,
             escrow.split[WHO_SELLER],
@@ -163,6 +169,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
             arbitratorData.arbitrated
         );
 
+        // Prepare list of addresses for the withdrawals
         address[5] memory addresses = [
             escrow.buyer,
             escrow.seller,
@@ -171,25 +178,26 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
             arbitratorData.arbitrator
         ];
 
+        // Send the shares to the addresses
         claimPayments(escrowId, payments, addresses, escrow.currency);
 
         if(address(crowRewards) != address(0)){
-            crowRewards.distribute(escrow.buyer, escrow.seller, payments[WHO_CROW]);
+            crowRewards.distribute(escrow.buyer, escrow.seller, payments[WHO_UNICROW]);
         }
 
         if(address(stakingRewards) != address(0)){
-            stakingRewards.collectFee(escrow.currency, payments[WHO_CROW]);
+            stakingRewards.collectFee(escrow.currency, payments[WHO_UNICROW]);
         }
 
-        ClaimEvent memory event_ = ClaimEvent(escrowId, payments);
+        // Emit the event incl. final amounts
+        emit SingleClaim(ClaimEvent(escrowId, payments));
 
-        emit SingleClaim(event_);
-
+        // Return the final amounts
         return [
             payments[WHO_BUYER],
             payments[WHO_SELLER],
             payments[WHO_MARKETPLACE],
-            payments[WHO_CROW],
+            payments[WHO_UNICROW],
             payments[WHO_ARBITRATOR]
         ];
     }
@@ -204,19 +212,17 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
         uint16 arbitratorFee,
         bool arbitrated,
         Escrow memory escrow
-    ) internal view returns(uint16[] memory) {
-        uint16[] memory split;
+    ) internal view returns(uint16[4] memory) {
+        uint16[4] memory split;
 
-        // Whether the escrow was decided by an arbitrator or not will have an impact on arbitrator fee in case the
-        // payment is (partially) refunded. Buyer doesn't pay any fees from the refunded portion unless the (partial)
-        // refund was done by the arbitrator, in which case the buyer pays their proportin of the arbitrator fee.
+        // The calculation will differ slightly based on whether the payment was decided by an arbitrator or not
         if(arbitrated) {
             split = unicrowArbitrator.arbitrationCalculation(
                 [
                     escrow.split[WHO_BUYER],
                     escrow.split[WHO_SELLER],
                     escrow.split[WHO_MARKETPLACE],
-                    escrow.split[WHO_CROW],
+                    escrow.split[WHO_UNICROW],
                     arbitratorFee
                 ]
             );
@@ -226,7 +232,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
                     escrow.split[WHO_BUYER],
                     escrow.split[WHO_SELLER],
                     escrow.split[WHO_MARKETPLACE],
-                    escrow.split[WHO_CROW],
+                    escrow.split[WHO_UNICROW],
                     arbitratorFee
                 ]
             );
@@ -239,27 +245,29 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
      * @dev Calculates actual amounts that should be sent to the parties
      * @param amount payment amount in escrow (in token)
      * @param split final splits
+     * @param fullSellerSplit seller split 
      * @param arbitratorFee Arbitrator fee
      * @param arbitrated whether the payment was arbitrated (it impacts final arbitrator's fee for refunds)
      */
     function calculatePayments(
         uint amount,
-        uint16[] memory split,
-        uint16 sellerSplit,
+        uint16[4] memory split,
+        uint16 fullSellerSplit,
         uint16 arbitratorFee,
         bool arbitrated
-    ) internal pure returns(uint256[] memory) {
-        uint256[] memory payments = new uint256[](5);
+    ) internal pure returns(uint256[5] memory) {
+        uint256[5] memory payments;
 
+        // Multiply all the splits by the total amount
         payments[WHO_BUYER] = uint256(split[WHO_BUYER]).mul(amount).div(_100_PCT_IN_BIPS);
         payments[WHO_SELLER] = uint256(split[WHO_SELLER]).mul(amount).div(_100_PCT_IN_BIPS);
         payments[WHO_MARKETPLACE] = uint256(split[WHO_MARKETPLACE]).mul(amount).div(_100_PCT_IN_BIPS);
-        payments[WHO_CROW] = uint256(split[WHO_CROW]).mul(amount).div(_100_PCT_IN_BIPS);
+        payments[WHO_UNICROW] = uint256(split[WHO_UNICROW]).mul(amount).div(_100_PCT_IN_BIPS);
 
         if(!arbitrated) {
             // If the payment wasn't arbitrated, the arbitrator fee is calculated from seller's share
             // (normally 100%, but could be 0 for refund)
-            uint16 arbitratorFee_ = uint16(uint256(arbitratorFee).mul(sellerSplit).div(_100_PCT_IN_BIPS));
+            uint16 arbitratorFee_ = uint16(uint256(arbitratorFee).mul(fullSellerSplit).div(_100_PCT_IN_BIPS));
             payments[WHO_ARBITRATOR] = uint256(arbitratorFee_).mul(amount).div(_100_PCT_IN_BIPS);
         } else {
             // If the arbitrator decided the payment, they get their full fee
@@ -279,7 +287,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
      */
     function claimPayments(
         uint escrowId,
-        uint[] memory amounts,
+        uint[5] memory amounts,
         address[5] memory addresses,
         address currency
     ) internal {

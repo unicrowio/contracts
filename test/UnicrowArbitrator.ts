@@ -331,8 +331,8 @@ describe("UnicrowArbitrator", function () {
 
       await unicrowArbitratorContract.connect(bob).arbitrate(escrowId, newSplit);
 
-      await expect((await unicrowContract.getEscrow(escrowId)).consensus).to.deep.equal([
-        1, 1,
+      expect((await unicrowContract.getEscrow(escrowId)).consensus).to.deep.equal([
+        2, 1,
       ]);
     });
 
@@ -410,63 +410,6 @@ describe("UnicrowArbitrator", function () {
 
       expect(await unicrowDisputeContract.latestSettlementOffer(escrowId, 0)).to.eq(5000);
       expect(await unicrowDisputeContract.latestSettlementOffer(escrowId, 1)).to.eq(5000);
-    });
-
-    it("should be able claim with arbitrary", async function () {
-      // Buyer needs to approve escrowValue allowance to unicrowContract contract
-
-      await crowToken.connect(buyer).approve(unicrowContract.address, escrowValueParsed);
-
-      await unicrowContract.connect(buyer).pay(
-        {
-          //@ts-ignore
-          ...payCommon,
-        },
-        bob.address,
-        100
-      );
-
-      await unicrowContract.connect(buyer).release(escrowId);
-
-      const escrow = await unicrowContract.getEscrow(escrowId);
-
-      const sellerSplit = escrow.split[2];
-      const buyerSplit = escrow.split[1];
-      const crowSplit = escrow.split[0];
-
-      // expect(await crowToken.balanceOf(seller.address)).to.eq(sellerClaimedValue);
-      // expect(await crowToken.balanceOf(buyer.address)).to.eq(buyerClaimedValue);
-      // expect(await crowToken.balanceOf(unicrowContract.address)).to.eq(crowRestValue);
-      // expect(await crowToken.balanceOf(bob.address)).to.eq(arbitrationClaimedValue);
-    });
-
-    it("should be able claim eth with arbitrary", async function () {
-      // Buyer needs to approve escrowValue allowance to unicrowContract contract
-
-      await unicrowContract.connect(buyer).pay(
-        {
-          //@ts-ignore
-          ...payEther,
-        },
-        bob.address,
-        100,
-        {
-          value: escrowValueEth,
-        }
-      );
-
-      await unicrowContract.connect(buyer).release(escrowId);
-
-      const escrow = await unicrowContract.getEscrow(escrowId);
-
-      const sellerSplit = escrow.split[2];
-      const buyerSplit = escrow.split[1];
-      const crowSplit = escrow.split[0];
-
-      // expect(await crowToken.balanceOf(seller.address)).to.eq(sellerClaimedValue);
-      // expect(await crowToken.balanceOf(buyer.address)).to.eq(buyerClaimedValue);
-      // expect(await crowToken.balanceOf(unicrowContract.address)).to.eq(crowRestValue);
-      // expect(await crowToken.balanceOf(bob.address)).to.eq(arbitrationClaimedValue);
     });
   });
 });

@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/emanuel/Desktop/popstand/contracts-audit/contracts/Unicrow.sol": {
-      "lastModificationDate": 1668634801139,
-      "contentHash": "d83202a76e08b61a39eac7c77553a3c8",
+      "lastModificationDate": 1668683443378,
+      "contentHash": "d6d19e70767d62d84f6ca77fbe79dc5b",
       "sourceName": "contracts/Unicrow.sol",
       "solcConfig": {
         "version": "0.8.7",
@@ -38,20 +38,20 @@
         "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
         "./interfaces/IUnicrow.sol",
         "./interfaces/IUnicrowClaim.sol",
-        "./interfaces/IUnicrowArbitrator.sol",
         "./UnicrowDispute.sol",
+        "./interfaces/IUnicrowArbitrator.sol",
         "./UnicrowTypes.sol"
       ],
       "versionPragmas": [
-        "^0.8.0"
+        "^0.8.7"
       ],
       "artifacts": [
         "Unicrow"
       ]
     },
     "/Users/emanuel/Desktop/popstand/contracts-audit/contracts/interfaces/IUnicrow.sol": {
-      "lastModificationDate": 1668633466666,
-      "contentHash": "83a8ad83ec647376780b48e0f9481557",
+      "lastModificationDate": 1668683720654,
+      "contentHash": "5093cd6898a6b40bb22618554a08cf41",
       "sourceName": "contracts/interfaces/IUnicrow.sol",
       "solcConfig": {
         "version": "0.8.7",
@@ -80,15 +80,15 @@
         "../UnicrowTypes.sol"
       ],
       "versionPragmas": [
-        "^0.8.0"
+        "^0.8.7"
       ],
       "artifacts": [
         "IUnicrow"
       ]
     },
     "/Users/emanuel/Desktop/popstand/contracts-audit/contracts/interfaces/IUnicrowClaim.sol": {
-      "lastModificationDate": 1668633466667,
-      "contentHash": "114aa7b9e8672c0663d28d3904d22af6",
+      "lastModificationDate": 1668683572217,
+      "contentHash": "1e9b84622b93697e005129db350a3920",
       "sourceName": "contracts/interfaces/IUnicrowClaim.sol",
       "solcConfig": {
         "version": "0.8.7",
@@ -115,15 +115,15 @@
       },
       "imports": [],
       "versionPragmas": [
-        "^0.8.0"
+        "^0.8.7"
       ],
       "artifacts": [
         "IUnicrowClaim"
       ]
     },
     "/Users/emanuel/Desktop/popstand/contracts-audit/contracts/interfaces/IUnicrowArbitrator.sol": {
-      "lastModificationDate": 1668633466666,
-      "contentHash": "c16757967b929548dbaf0094cb4cb563",
+      "lastModificationDate": 1668683563953,
+      "contentHash": "13b0c686b02cb209330bd5effcfcaf7b",
       "sourceName": "contracts/interfaces/IUnicrowArbitrator.sol",
       "solcConfig": {
         "version": "0.8.7",
@@ -152,15 +152,15 @@
         "../UnicrowTypes.sol"
       ],
       "versionPragmas": [
-        "^0.8.0"
+        "^0.8.7"
       ],
       "artifacts": [
         "IUnicrowArbitrator"
       ]
     },
     "/Users/emanuel/Desktop/popstand/contracts-audit/contracts/UnicrowDispute.sol": {
-      "lastModificationDate": 1668634762037,
-      "contentHash": "a2df41355bce44896502320b684be8f9",
+      "lastModificationDate": 1668683472845,
+      "contentHash": "61bebe3a97031a3a1e9a57b8b528029c",
       "sourceName": "contracts/UnicrowDispute.sol",
       "solcConfig": {
         "version": "0.8.7",
@@ -196,15 +196,15 @@
         "./UnicrowTypes.sol"
       ],
       "versionPragmas": [
-        "^0.8.0"
+        "^0.8.7"
       ],
       "artifacts": [
         "UnicrowDispute"
       ]
     },
     "/Users/emanuel/Desktop/popstand/contracts-audit/contracts/UnicrowTypes.sol": {
-      "lastModificationDate": 1668634762045,
-      "contentHash": "d800453268560485c71d10c2e8935793",
+      "lastModificationDate": 1668683461517,
+      "contentHash": "aa5cb71b24b8da961ac29fc1c6bca22b",
       "sourceName": "contracts/UnicrowTypes.sol",
       "solcConfig": {
         "version": "0.8.7",
@@ -233,7 +233,7 @@
         "@openzeppelin/contracts/token/ERC20/IERC20.sol"
       ],
       "versionPragmas": [
-        "^0.8.0"
+        "^0.8.7"
       ],
       "artifacts": []
     },
@@ -490,8 +490,8 @@
       ]
     },
     "/Users/emanuel/Desktop/popstand/contracts-audit/contracts/interfaces/IUnicrowDispute.sol": {
-      "lastModificationDate": 1668633466667,
-      "contentHash": "22c8dc201c7acc7380b3a820a0a4aefd",
+      "lastModificationDate": 1668683594147,
+      "contentHash": "990cd0d1076a5f76d41f0e92fd7ad526",
       "sourceName": "contracts/interfaces/IUnicrowDispute.sol",
       "solcConfig": {
         "version": "0.8.7",
@@ -520,7 +520,7 @@
         "../UnicrowTypes.sol"
       ],
       "versionPragmas": [
-        "^0.8.0"
+        "^0.8.7"
       ],
       "artifacts": [
         "IUnicrowDispute"
@@ -599,8 +599,8 @@
       ]
     },
     "/Users/emanuel/Desktop/popstand/contracts-audit/contracts/UnicrowClaim.sol": {
-      "lastModificationDate": 1668634762033,
-      "contentHash": "5fe730433603495b4a8137e1bb3a6492",
+      "lastModificationDate": 1668683481541,
+      "contentHash": "1d53bccd0529ce7669c3239fa5d5ed98",
       "sourceName": "contracts/UnicrowClaim.sol",
       "solcConfig": {
         "version": "0.8.7",
@@ -639,7 +639,7 @@
         "./UnicrowTypes.sol"
       ],
       "versionPragmas": [
-        "^0.8.0"
+        "^0.8.7"
       ],
       "artifacts": [
         "UnicrowClaim"
@@ -716,8 +716,8 @@
       ]
     },
     "/Users/emanuel/Desktop/popstand/contracts-audit/contracts/UnicrowArbitrator.sol": {
-      "lastModificationDate": 1668634762027,
-      "contentHash": "c5b0ebf39cf31775bb8fc9278331caf1",
+      "lastModificationDate": 1668683497762,
+      "contentHash": "1ab47bb29c5918ec1ce0854e637ddd11",
       "sourceName": "contracts/UnicrowArbitrator.sol",
       "solcConfig": {
         "version": "0.8.7",
@@ -753,7 +753,7 @@
         "./UnicrowTypes.sol"
       ],
       "versionPragmas": [
-        "^0.8.0"
+        "^0.8.7"
       ],
       "artifacts": [
         "UnicrowArbitrator"

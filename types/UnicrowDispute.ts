@@ -79,6 +79,9 @@ export interface UnicrowDisputeInterface extends utils.Interface {
     "latestSettlementOffer(uint256,uint256)": FunctionFragment;
     "latestSettlementOfferBy(uint256)": FunctionFragment;
     "offerSettlement(uint256,uint16[2])": FunctionFragment;
+    "unicrow()": FunctionFragment;
+    "unicrowArbitrator()": FunctionFragment;
+    "unicrowClaim()": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -105,6 +108,15 @@ export interface UnicrowDisputeInterface extends utils.Interface {
     functionFragment: "offerSettlement",
     values: [BigNumberish, [BigNumberish, BigNumberish]]
   ): string;
+  encodeFunctionData(functionFragment: "unicrow", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "unicrowArbitrator",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "unicrowClaim",
+    values?: undefined
+  ): string;
 
   decodeFunctionResult(
     functionFragment: "approveSettlement",
@@ -125,6 +137,15 @@ export interface UnicrowDisputeInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "offerSettlement",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "unicrow", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "unicrowArbitrator",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "unicrowClaim",
     data: BytesLike
   ): Result;
 
@@ -237,6 +258,12 @@ export interface UnicrowDispute extends BaseContract {
       newSplit: [BigNumberish, BigNumberish],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    unicrow(overrides?: CallOverrides): Promise<[string]>;
+
+    unicrowArbitrator(overrides?: CallOverrides): Promise<[string]>;
+
+    unicrowClaim(overrides?: CallOverrides): Promise<[string]>;
   };
 
   approveSettlement(
@@ -272,6 +299,12 @@ export interface UnicrowDispute extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  unicrow(overrides?: CallOverrides): Promise<string>;
+
+  unicrowArbitrator(overrides?: CallOverrides): Promise<string>;
+
+  unicrowClaim(overrides?: CallOverrides): Promise<string>;
+
   callStatic: {
     approveSettlement(
       escrowId: BigNumberish,
@@ -302,6 +335,12 @@ export interface UnicrowDispute extends BaseContract {
       newSplit: [BigNumberish, BigNumberish],
       overrides?: CallOverrides
     ): Promise<void>;
+
+    unicrow(overrides?: CallOverrides): Promise<string>;
+
+    unicrowArbitrator(overrides?: CallOverrides): Promise<string>;
+
+    unicrowClaim(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
@@ -378,6 +417,12 @@ export interface UnicrowDispute extends BaseContract {
       newSplit: [BigNumberish, BigNumberish],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    unicrow(overrides?: CallOverrides): Promise<BigNumber>;
+
+    unicrowArbitrator(overrides?: CallOverrides): Promise<BigNumber>;
+
+    unicrowClaim(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -413,5 +458,11 @@ export interface UnicrowDispute extends BaseContract {
       newSplit: [BigNumberish, BigNumberish],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    unicrow(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    unicrowArbitrator(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    unicrowClaim(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

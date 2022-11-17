@@ -32,6 +32,11 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
 
     /// Destination address of the protocol fee (governed)
     address public unicrowFeeAddress;
+    
+    struct ClaimEvent {
+        uint escrowId;
+        uint[5] amount;
+    }
 
     /// Emitted when multiple escrows are claimed
     /// @param escrows data of all escrows that were claimed

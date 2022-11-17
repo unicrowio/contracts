@@ -127,11 +127,6 @@ const _abi = [
         components: [
           {
             internalType: "address",
-            name: "buyer",
-            type: "address",
-          },
-          {
-            internalType: "address",
             name: "seller",
             type: "address",
           },
@@ -141,14 +136,14 @@ const _abi = [
             type: "address",
           },
           {
-            internalType: "address",
-            name: "currency",
-            type: "address",
-          },
-          {
             internalType: "uint16",
             name: "marketplaceFee",
             type: "uint16",
+          },
+          {
+            internalType: "address",
+            name: "currency",
+            type: "address",
           },
           {
             internalType: "uint32",
@@ -166,8 +161,8 @@ const _abi = [
             type: "uint256",
           },
         ],
-        internalType: "struct DepositInput",
-        name: "data",
+        internalType: "struct EscrowInput",
+        name: "input",
         type: "tuple",
       },
       {

@@ -7,12 +7,12 @@ interface IUnicrow {
   /**
    * @notice Deposit ETH or SafeERC20 to open a new escrow payment
    * @dev Escrow ID is generated automatically by the contract
-   * @param data Escrow data (seller, marketplace, currency, and challenge period information)
+   * @param input Escrow input (seller, marketplace, currency, and challenge period information)
    * @param arbitrator Arbitrator address (submit zero address to not set an arbitrator)
    * @param arbitratorFee Arbitrator Fee
    */
   function pay(
-    DepositInput memory data,
+    EscrowInput memory input,
     address arbitrator,
     uint16 arbitratorFee
   ) external payable;

@@ -9,11 +9,10 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-
 import "./interfaces/IUnicrow.sol";
 import "./interfaces/IUnicrowClaim.sol";
-import "./UnicrowDispute.sol";
 import "./interfaces/IUnicrowArbitrator.sol";
+import "./UnicrowDispute.sol";
 import "./UnicrowTypes.sol";
 
 /// @title The primary Unicrow contract
@@ -114,7 +113,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
 
     /// @inheritdoc IUnicrow
     function pay(
-        DepositInput calldata data,
+        EscrowInput calldata input,
         address arbitrator,
         uint16 arbitratorFee
     ) external override payable nonReentrant {
@@ -127,15 +126,15 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         require(escrows[escrowId].buyer == address(0), "0-001");
 
         // Seller cannot be empty
-        require(data.seller != address(0), "0-002");
+        require(input.seller != address(0), "0-002");
 
         // Buyer cannot be seller
-        require(buyer != data.seller, "0-003");
+        require(buyer != input.seller, "0-003");
 
         // Payment value must be greater than zero
         if (msg.value != 0) {
             // Amount in the payment metadata must match what was sent
-            require(data.amount == msg.value);
+            require(input.amount == msg.value);
         }
 
         // Check if the arbitrator was defined
@@ -148,33 +147,33 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         uint16 escrowFee_ = escrowFee;
 
         // Split array is how Unicrow maintains information about seller's and buyer's shares, and the fees
-        uint16[4] memory split = [0, 10000, data.marketplaceFee, escrowFee_];
+        uint16[4] memory split = [0, 10000, input.marketplaceFee, escrowFee_];
         // Set initial consensus to buyer = 0, seller = 1
         int16[2] memory consensus = [int16(0), int16(1)];
 
         // Create an Escrow object that will be stored in the contract
         Escrow memory escrow = Escrow({
             buyer: buyer,
-            seller: data.seller,
-            currency: data.currency,
-            marketplace: data.marketplace,
-            marketplaceFee: data.marketplaceFee,
+            seller: input.seller,
+            currency: input.currency,
+            marketplace: input.marketplace,
+            marketplaceFee: input.marketplaceFee,
             claimed: 0,
             split: split,
             consensus: consensus,
-            challengeExtension: uint64(data.challengeExtension > 0 ? data.challengeExtension : data.challengePeriod),
+            challengeExtension: uint64(input.challengeExtension > 0 ? input.challengeExtension : input.challengePeriod),
             challengePeriodStart: uint64(block.timestamp), //challenge start
-            challengePeriodEnd: uint64(block.timestamp + data.challengePeriod), //chalenge end
-            amount: data.amount
+            challengePeriodEnd: uint64(block.timestamp + input.challengePeriod), //chalenge end
+            amount: input.amount
         });
 
         // If the payment was made in ERC20 and not ETH, execute the transfer
-        if (data.currency != address(0)) {
+        if (input.currency != address(0)) {
             SafeERC20.safeTransferFrom(
-                IERC20(data.currency),
+                IERC20(input.currency),
                 buyer,
                 address(this),
-                data.amount
+                input.amount
             );
         }
 
@@ -184,7 +183,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         // Increase the escrow id counter
         escrowIdCounter.increment();
 
-        emit Pay(escrowId, block.timestamp, escrow, arbitrator, arbitratorFee, data.challengePeriod);
+        emit Pay(escrowId, block.timestamp, escrow, arbitrator, arbitratorFee, input.challengePeriod);
     }
 
     /// @inheritdoc IUnicrow

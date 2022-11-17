@@ -75,14 +75,15 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         address unicrowClaim_,
         address unicrowArbitrator_,
         address unicrowDispute_,
-        address governanceAddress_
+        address governanceAddress_,
+        uint16 escrowFee_
     ) {
         unicrowArbitrator = IUnicrowArbitrator(unicrowArbitrator_);
         unicrowClaim = IUnicrowClaim(unicrowClaim_);
         unicrowDispute = UnicrowDispute(unicrowDispute_);
         governanceAddress = governanceAddress_;
 
-        escrowFee = 0;
+        escrowFee = escrowFee_;
     }
 
     /// Check that the governance contract is calling this

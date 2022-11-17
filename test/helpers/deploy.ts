@@ -12,10 +12,7 @@ import { UnicrowArbitrator } from "../../types/UnicrowArbitrator";
 import { UnicrowClaim } from "../../types/UnicrowClaim";
 import { UnicrowDispute } from "../../types/UnicrowDispute";
 
-//@ts-ignore
-import { constants } from "@openzeppelin/test-helpers";
-
-const { ZERO_ADDRESS } = constants;
+const UNICROW_FEE = 0 // bips;
 
 export const GetFactories = async () => {
       const UnicrowFactory = (await ethers.getContractFactory(
@@ -105,7 +102,7 @@ export const setup = async () => {
         UnicrowArbitratorAddressNonce,
     } = await predictAddresses();
     
-    const unicrow : Unicrow = await UnicrowFactory.deploy(UnicrowClaimAddressNonce, UnicrowArbitratorAddressNonce, UnicrowDisputeAddressNonce, treasury.address);
+    const unicrow : Unicrow = await UnicrowFactory.deploy(UnicrowClaimAddressNonce, UnicrowArbitratorAddressNonce, UnicrowDisputeAddressNonce, treasury.address, UNICROW_FEE);
     await unicrow.deployed();
 
     const unicrowClaim: UnicrowClaim = await UnicrowClaimFactory.deploy(UnicrowAddressNonce, UnicrowArbitratorAddressNonce, treasury.address);

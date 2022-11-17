@@ -35,9 +35,9 @@ cp .env.example .env
 |---------------------|--------------------------------------------------|
 | GNOSIS_SAFE_ADDRESS | Governance address multisign                     |
 | PRIVATE_KEY         | Deployer account                                 |
-| NODE_URL            | Infura, Alchemy OR any node to deploy to mainnet |
+| NODE_URL            | Infura, Alchemy or any node to deploy to mainnet |
 
 Command to deploy:
 ```
-yarn hardhat run ./scripts/deploy.ts
+yarn hardhat run ./scripts/deploy.ts --network mainnet
 ```

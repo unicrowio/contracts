@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/emanuel/Desktop/popstand/contracts-audit/contracts/Unicrow.sol": {
-      "lastModificationDate": 1668687403985,
-      "contentHash": "5ae7efe095cec7cd0dcf73f151728e05",
+      "lastModificationDate": 1668714992345,
+      "contentHash": "eca9a6fe56f66d0e601db9f33b64f932",
       "sourceName": "contracts/Unicrow.sol",
       "solcConfig": {
         "version": "0.8.7",
@@ -599,7 +599,7 @@
       ]
     },
     "/Users/emanuel/Desktop/popstand/contracts-audit/contracts/UnicrowClaim.sol": {
-      "lastModificationDate": 1668687433499,
+      "lastModificationDate": 1668693494535,
       "contentHash": "594887d9d07d0031037aa2ed895d3673",
       "sourceName": "contracts/UnicrowClaim.sol",
       "solcConfig": {

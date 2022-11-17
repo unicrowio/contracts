@@ -9,6 +9,7 @@ import { UnicrowClaim__factory } from "../types/factories/UnicrowClaim__factory"
 dotenv.config();
 
 const GNOSIS_SAFE_ADDRESS = process.env.GNSOSIS_SAFE_ADDRESS as string;
+const UNICROW_FEE = 0 // bips;
 
 async function main() {
   const [deployer] = await ethers.getSigners();
@@ -55,7 +56,8 @@ async function main() {
     UnicrowClaimAddress,
     UnicrowArbitratorAddress,
     UnicrowDisputeAddress,
-    GNOSIS_SAFE_ADDRESS
+    GNOSIS_SAFE_ADDRESS,
+    UNICROW_FEE
   );
 
   await unicrow.deployed();

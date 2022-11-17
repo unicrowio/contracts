@@ -20,12 +20,21 @@ import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 
 export type ClaimEventStruct = {
   escrowId: BigNumberish;
-  amount: BigNumberish[];
+  amount: [
+    BigNumberish,
+    BigNumberish,
+    BigNumberish,
+    BigNumberish,
+    BigNumberish
+  ];
 };
 
-export type ClaimEventStructOutput = [BigNumber, BigNumber[]] & {
+export type ClaimEventStructOutput = [
+  BigNumber,
+  [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber]
+] & {
   escrowId: BigNumber;
-  amount: BigNumber[];
+  amount: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
 };
 
 export interface UnicrowClaimInterface extends utils.Interface {

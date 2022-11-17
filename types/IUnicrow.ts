@@ -387,7 +387,7 @@ export interface IUnicrow extends BaseContract {
         BigNumberish
       ],
       overrides?: CallOverrides
-    ): Promise<number[]>;
+    ): Promise<[number, number, number, number]>;
 
     updateEscrowFee(
       fee: BigNumberish,

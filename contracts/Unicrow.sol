@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.7;
 
 import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
@@ -12,8 +12,8 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 import "./interfaces/IUnicrow.sol";
 import "./interfaces/IUnicrowClaim.sol";
-import "./interfaces/IUnicrowArbitrator.sol";
 import "./UnicrowDispute.sol";
+import "./interfaces/IUnicrowArbitrator.sol";
 import "./UnicrowTypes.sol";
 
 /// @title The primary Unicrow contract
@@ -26,16 +26,16 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
     Counters.Counter public escrowIdCounter;
 
     /// @notice Arbitrator information and functionality for the escrows
-    IUnicrowArbitrator public unicrowArbitrator;
+    IUnicrowArbitrator public immutable unicrowArbitrator;
 
     /// @notice Withdraws payments from the escrows once the criteria are met
-    IUnicrowClaim public unicrowClaim;
+    IUnicrowClaim public immutable unicrowClaim;
 
     /// @notice Dispute resolution, incl. challenges and settlements
-    UnicrowDispute public unicrowDispute;
+    UnicrowDispute public immutable unicrowDispute;
 
     /// @notice Escrow fee in bips (can never be higher than 100)
-    uint16 public escrowFee = 0;
+    uint16 public escrowFee;
 
     /// address of a governance contract (multisig initially, DAO governor eventually)
     address public governanceAddress;
@@ -82,6 +82,8 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         unicrowClaim = IUnicrowClaim(unicrowClaim_);
         unicrowDispute = UnicrowDispute(unicrowDispute_);
         governanceAddress = governanceAddress_;
+
+        escrowFee = 0;
     }
 
     /// Check that the governance contract is calling this
@@ -112,31 +114,45 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
 
     /// @inheritdoc IUnicrow
     function pay(
-        DepositInput memory data,
+        DepositInput calldata data,
         address arbitrator,
         uint16 arbitratorFee
     ) external override payable nonReentrant {
+        // Get current escrow id from the incremental counter
         uint256 escrowId = escrowIdCounter.current();
 
+        // The address that sent the payment is set as a buyer
         address buyer = _msgSender();
 
         require(escrows[escrowId].buyer == address(0), "0-001");
+
+        // Seller cannot be empty
         require(data.seller != address(0), "0-002");
+
+        // Buyer cannot be seller
         require(buyer != data.seller, "0-003");
 
+        // Payment value must be greater than zero
         if (msg.value != 0) {
+            // Amount in the payment metadata must match what was sent
             require(data.amount == msg.value);
         }
 
+        // Check if the arbitrator was defined
         if (arbitrator != address(0)) {
+            // Set the arbitrator in the arbitrator contract
             unicrowArbitrator.setArbitrator(escrowId, arbitrator, arbitratorFee);
         }
 
+        // Get current protocol fee
         uint16 escrowFee_ = escrowFee;
 
+        // Split array is how Unicrow maintains information about seller's and buyer's shares, and the fees
         uint16[4] memory split = [0, 10000, data.marketplaceFee, escrowFee_];
+        // Set initial consensus to buyer = 0, seller = 1
         int16[2] memory consensus = [int16(0), int16(1)];
 
+        // Create an Escrow object that will be stored in the contract
         Escrow memory escrow = Escrow({
             buyer: buyer,
             seller: data.seller,
@@ -152,6 +168,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
             amount: data.amount
         });
 
+        // If the payment was made in ERC20 and not ETH, execute the transfer
         if (data.currency != address(0)) {
             SafeERC20.safeTransferFrom(
                 IERC20(data.currency),
@@ -161,9 +178,10 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
             );
         }
 
+        // Store the escrow information
         escrows[escrowId] = escrow;
 
-        // Increment escrowId
+        // Increase the escrow id counter
         escrowIdCounter.increment();
 
         emit Pay(escrowId, block.timestamp, escrow, arbitrator, arbitratorFee, data.challengePeriod);
@@ -172,25 +190,33 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
     /// @inheritdoc IUnicrow
     function refund(uint256 escrowId) external override nonReentrant {
         address sender = _msgSender();
+
+        // Get escrow information from the contract's storage
         Escrow memory escrow = escrows[escrowId];
 
+        // Only seller can refund
         require(sender == escrow.seller, "1-011");
 
+        // Check that the escrow is not claimed yet
         require(escrow.claimed == 0, "0-005");
 
+        // Set split to 100% to buyer and waive the fees
         escrow.split[WHO_BUYER] = 10000;
         escrow.split[WHO_SELLER] = 0;
         escrow.split[WHO_MARKETPLACE] = 0;
-        escrow.split[WHO_CROW] = 0;
+        escrow.split[WHO_UNICROW] = 0;
+        
+        // Keep record of number of challenges (for reputation purposes)
+        escrow.consensus[WHO_BUYER] = abs8(escrow.consensus[WHO_BUYER]) + 1;
 
-        escrow.consensus[0] = abs8(escrow.consensus[0]) == int8(0)
-            ? int8(1)
-            : abs8(escrow.consensus[0]);
-        escrow.consensus[1] = abs8(escrow.consensus[1]);
+        // Set escrow consensus based on the number of previous challenges (1 = no challenge)
+        escrow.consensus[WHO_SELLER] = abs8(escrow.consensus[WHO_SELLER]);
 
+        // Update splits and consensus information in the storage
         escrows[escrowId].split = escrow.split;
         escrows[escrowId].consensus = escrow.consensus;
 
+        // Withdraw the amount to the buyer
         if (address(escrow.currency) == address(0)) {
             (bool success, ) = escrow.buyer.call{value: escrow.amount}("");
             require(success, "1-012");
@@ -202,8 +228,8 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
             );
         }
 
+        // Update the escrow as claimed in the storage and in the emitted event
         escrows[escrowId].claimed = 1;
-
         escrow.claimed = 1;
 
         emit Refund(escrowId, escrow, block.timestamp);
@@ -214,27 +240,30 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         address sender = _msgSender();
         Escrow memory escrow = escrows[escrowId];
 
+        // Only buyer can release
         require(sender == escrow.buyer, "1-025");
 
-        int16 currentConsensus = abs8(escrow.consensus[WHO_BUYER]) == 0
-            ? int16(1)
-            : abs8(escrow.consensus[WHO_BUYER]);
+        // Set buyer consensus to 1 or based on the number of previous challenges
+        escrow.consensus[WHO_BUYER] = abs8(escrow.consensus[WHO_BUYER]) + 1;
 
-        escrow.consensus[WHO_BUYER] = currentConsensus;
+        // Set seller's escrow consensus based on the number of previous challenges
         escrow.consensus[WHO_SELLER] = abs8(escrow.consensus[WHO_SELLER]);
 
+        // Update consensus in the storage
         escrows[escrowId].consensus = escrow.consensus;
 
+        // Claim the payment and fees and get the final amounts
         uint256[5] memory amounts = unicrowClaim.singleClaim(escrowId);
 
+        // Emit all the information including the amounts
         emit Release(escrowId, block.timestamp, escrow, amounts);
     }
 
     /// @inheritdoc IUnicrow
     function challenge(
         uint256 escrowId,
-        uint16[4] memory split,
-        int16[2] memory consensus,
+        uint16[4] calldata split,
+        int16[2] calldata consensus,
         uint64 challengeStart,
         uint64 challengeEnd
     ) external override isUnicrowDispute {
@@ -275,6 +304,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
     {
         address currency = escrows[escrowId].currency;
 
+        // Get information about the ERC20 token (or return ETH)
         Token memory token = Token({
             address_: currency,
             decimals: currency == address(0) ? 18 : ERC20(currency).decimals(),
@@ -313,8 +343,8 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
     /// @inheritdoc IUnicrow
     function settle(
         uint256 escrowId,
-        uint16[4] memory split,
-        int16[2] memory consensus
+        uint16[4] calldata split,
+        int16[2] calldata consensus
     ) external override isUnicrowArbitratorOrDispute {
         escrows[escrowId].split = split;
         escrows[escrowId].consensus = consensus;
@@ -322,22 +352,24 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
 
     /// @inheritdoc IUnicrow
     function splitCalculation(
-        uint16[5] memory currentSplit
-    ) external pure override returns (uint16[] memory) {
-         uint16[] memory split = new uint16[](4);
+        uint16[5] calldata currentSplit
+    ) external pure override returns (uint16[4] memory) {
+        uint16[4] memory split;
 
         uint16 calculatedArbitratorFee;
 
-        if (currentSplit[WHO_CROW] > 0) {
+        // Discount the protocol fee based on seller's share
+        if (currentSplit[WHO_UNICROW] > 0) {
             unchecked {
-                split[WHO_CROW] = uint16(
-                    uint256(currentSplit[WHO_CROW])
+                split[WHO_UNICROW] = uint16(
+                    uint256(currentSplit[WHO_UNICROW])
                         .mul(currentSplit[WHO_SELLER])
                         .div(_100_PCT_IN_BIPS)
                 );
             }
         }
 
+        // Discount the marketplace fee based on the seller's share
         if (currentSplit[WHO_MARKETPLACE] > 0) {
             unchecked {
                 split[WHO_MARKETPLACE] = uint16(
@@ -348,6 +380,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
             }
         }
 
+        // Discount the arbitrator's fee based on the seller's share
         unchecked {
             calculatedArbitratorFee = uint16(
                 uint256(currentSplit[WHO_ARBITRATOR]).mul(currentSplit[WHO_SELLER]).div(
@@ -356,8 +389,9 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
             );
         }
 
+        // Calculate seller's final share by substracting all the fees
         unchecked {
-            split[WHO_SELLER] = currentSplit[WHO_SELLER] - split[WHO_CROW] - split[WHO_MARKETPLACE] - calculatedArbitratorFee;
+            split[WHO_SELLER] = currentSplit[WHO_SELLER] - split[WHO_UNICROW] - split[WHO_MARKETPLACE] - calculatedArbitratorFee;
             split[WHO_BUYER] = currentSplit[WHO_BUYER];
         }
 

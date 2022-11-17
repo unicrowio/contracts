@@ -1,5 +1,6 @@
+
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.7;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
@@ -8,7 +9,7 @@ uint16 constant _100_PCT_IN_BIPS = 10000;
 uint8 constant WHO_BUYER = 0;
 uint8 constant WHO_SELLER = 1;
 uint8 constant WHO_MARKETPLACE = 2;
-uint8 constant WHO_CROW = 3;
+uint8 constant WHO_UNICROW = 3;
 uint8 constant WHO_ARBITRATOR = 4;
 
 /**
@@ -61,7 +62,7 @@ struct Arbitrator {
 
 struct ClaimEvent {
     uint escrowId;
-    uint[] amount;
+    uint[5] amount;
 }
 
 struct Settlement {

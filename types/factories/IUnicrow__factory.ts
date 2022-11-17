@@ -259,9 +259,9 @@ const _abi = [
     name: "splitCalculation",
     outputs: [
       {
-        internalType: "uint16[]",
+        internalType: "uint16[4]",
         name: "",
-        type: "uint16[]",
+        type: "uint16[4]",
       },
     ],
     stateMutability: "nonpayable",

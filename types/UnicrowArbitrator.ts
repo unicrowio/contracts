@@ -262,7 +262,7 @@ export interface UnicrowArbitrator extends BaseContract {
         BigNumberish
       ],
       overrides?: CallOverrides
-    ): Promise<[number[]]>;
+    ): Promise<[[number, number, number, number]]>;
 
     escrowArbitrator(
       arg0: BigNumberish,
@@ -323,7 +323,7 @@ export interface UnicrowArbitrator extends BaseContract {
       BigNumberish
     ],
     overrides?: CallOverrides
-  ): Promise<number[]>;
+  ): Promise<[number, number, number, number]>;
 
   escrowArbitrator(
     arg0: BigNumberish,
@@ -384,7 +384,7 @@ export interface UnicrowArbitrator extends BaseContract {
         BigNumberish
       ],
       overrides?: CallOverrides
-    ): Promise<number[]>;
+    ): Promise<[number, number, number, number]>;
 
     escrowArbitrator(
       arg0: BigNumberish,

@@ -1,5 +1,4 @@
 import chai, { expect } from "chai";
-import web3 from "web3";
 
 import { ethers, network } from "hardhat";
 import { solidity } from "ethereum-waffle";
@@ -44,7 +43,7 @@ describe("UnicrowClaim", function () {
   const escrowValueEth = ethers.utils.parseUnits("100", 18);
 
   const escrowId = 0;
-  const secondEscrowId = String(web3.utils.sha3("an escrow account2"));
+  const secondEscrowId = String(ethers.utils.id("an escrow account2"));
 
   beforeEach(async () => {
     // Get the list of accounts

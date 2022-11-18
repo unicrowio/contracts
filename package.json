@@ -1,5 +1,5 @@
 {
-  "name": "contract",
+  "name": "@unicrow/contract",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
@@ -8,7 +8,9 @@
     "clean": "rm -rf cache && rm -rf types && rm -rf artifacts"
   },
   "devDependencies": {
+    "@ethersproject/address": "5.7.0",
     "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@nomiclabs/hardhat-etherscan": "^3.0.0",
     "@nomiclabs/hardhat-truffle5": "^2.0.3",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
     "@nomiclabs/hardhat-web3": "^2.0.0",
@@ -28,13 +30,9 @@
     "prettier-plugin-solidity": "^1.0.0-beta.19",
     "ts-node": "^10.5.0",
     "typechain": "^7.0.0",
-    "typescript": "^4.5.5",
-    "web3": "^1.6.1"
+    "typescript": "^4.5.5"
   },
   "dependencies": {
-    "@ethersproject/address": "5.7.0",
-    "@nomiclabs/hardhat-etherscan": "^3.0.0",
-    "@openzeppelin/contracts": "4.6.0",
-    "@openzeppelin/hardhat-upgrades": "^1.10.0"
+    "@openzeppelin/contracts": "4.6.0"
   }
 }

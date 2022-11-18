@@ -3,7 +3,6 @@
 pragma solidity ^0.8.7;
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./Unicrow.sol";
 import "./interfaces/IUnicrowArbitrator.sol";
@@ -15,7 +14,6 @@ import "./UnicrowTypes.sol";
  * @notice Functionality for assigning an arbitrator to an escrow and for an arbitrator to decide a dispute
  */
 contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
-    using SafeMath for uint256;
     using Address for address payable;
 
     /// Reference to the main Unicrow contract
@@ -242,8 +240,8 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
         unchecked {
             calculatedBuyerArbitratorFee = uint16(
                 uint256(currentSplit[WHO_ARBITRATOR])
-                    .mul(currentSplit[WHO_BUYER])
-                    .div(_100_PCT_IN_BIPS)
+                     * currentSplit[WHO_BUYER]
+                     / _100_PCT_IN_BIPS
             );
         }
 
@@ -251,8 +249,8 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
         unchecked {
             calculatedSellerArbitratorFee = uint16(
                 uint256(currentSplit[WHO_ARBITRATOR])
-                    .mul(currentSplit[WHO_SELLER])
-                    .div(_100_PCT_IN_BIPS)
+                    * currentSplit[WHO_SELLER]
+                    / _100_PCT_IN_BIPS
             );
         }
 
@@ -261,8 +259,8 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
             unchecked {
                 split[WHO_UNICROW] = uint16(
                     uint256(currentSplit[WHO_UNICROW])
-                        .mul(currentSplit[WHO_SELLER])
-                        .div(_100_PCT_IN_BIPS)
+                        * currentSplit[WHO_SELLER]
+                        / _100_PCT_IN_BIPS
                 );
             }
         }
@@ -272,8 +270,8 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
             unchecked {
                 split[WHO_MARKETPLACE] = uint16(
                     uint256(currentSplit[WHO_MARKETPLACE])
-                        .mul(currentSplit[WHO_SELLER])
-                        .div(_100_PCT_IN_BIPS)
+                        * currentSplit[WHO_SELLER]
+                        / _100_PCT_IN_BIPS
                 );
             }
         }
@@ -283,7 +281,7 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
             unchecked {
                 split[WHO_BUYER] = uint16(
                     uint256(currentSplit[WHO_BUYER])
-                        .sub(calculatedBuyerArbitratorFee)
+                         - calculatedBuyerArbitratorFee
                     );
             }
         }
@@ -293,9 +291,9 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
             unchecked {
                 split[WHO_SELLER] = uint16(
                     uint256(currentSplit[WHO_SELLER])
-                        .sub(split[WHO_UNICROW])
-                        .sub(split[WHO_MARKETPLACE])
-                        .sub(calculatedSellerArbitratorFee)
+                        - split[WHO_UNICROW]
+                        - split[WHO_MARKETPLACE]
+                        - calculatedSellerArbitratorFee
                     );
             }
         }

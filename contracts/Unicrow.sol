@@ -3,7 +3,6 @@
 pragma solidity ^0.8.7;
 
 import "@openzeppelin/contracts/utils/Context.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -18,7 +17,6 @@ import "./UnicrowTypes.sol";
 /// @title The primary Unicrow contract
 /// @notice Receives and distributes the payments, maintains and provides information about the escrow records, and allows basic operations
 contract Unicrow is ReentrancyGuard, IUnicrow, Context {
-    using SafeMath for uint256;
     using Counters for Counters.Counter;
 
     /// Generates unique escrow ID in incremental order
@@ -362,9 +360,9 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         if (currentSplit[WHO_UNICROW] > 0) {
             unchecked {
                 split[WHO_UNICROW] = uint16(
-                    uint256(currentSplit[WHO_UNICROW])
-                        .mul(currentSplit[WHO_SELLER])
-                        .div(_100_PCT_IN_BIPS)
+                    uint256(currentSplit[WHO_UNICROW]) * 
+                        currentSplit[WHO_SELLER] / 
+                        _100_PCT_IN_BIPS
                 );
             }
         }
@@ -373,9 +371,9 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         if (currentSplit[WHO_MARKETPLACE] > 0) {
             unchecked {
                 split[WHO_MARKETPLACE] = uint16(
-                    uint256(currentSplit[WHO_MARKETPLACE])
-                        .mul(currentSplit[WHO_SELLER])
-                        .div(_100_PCT_IN_BIPS)
+                    uint256(currentSplit[WHO_MARKETPLACE]) * 
+                        currentSplit[WHO_SELLER] /
+                        _100_PCT_IN_BIPS
                 );
             }
         }
@@ -383,9 +381,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         // Discount the arbitrator's fee based on the seller's share
         unchecked {
             calculatedArbitratorFee = uint16(
-                uint256(currentSplit[WHO_ARBITRATOR]).mul(currentSplit[WHO_SELLER]).div(
-                    _100_PCT_IN_BIPS
-                )
+                uint256(currentSplit[WHO_ARBITRATOR]) * currentSplit[WHO_SELLER] / _100_PCT_IN_BIPS
             );
         }
 

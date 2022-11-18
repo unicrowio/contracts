@@ -3,9 +3,6 @@ import chai, { expect } from "chai";
 import { ethers, network } from "hardhat";
 import { solidity } from "ethereum-waffle";
 
-//@ts-ignore
-import { constants } from "@openzeppelin/test-helpers";
-
 import { Unicrow } from "../types/Unicrow";
 import { UnicrowDispute } from "../types/UnicrowDispute";
 
@@ -29,7 +26,7 @@ describe("Unicrow", function () {
   let payCommon: any;
   let payEther: any;
 
-  const { ZERO_ADDRESS } = constants;
+  const { AddressZero: ZERO_ADDRESS } = ethers.constants;
 
   const escrowValue = 9191;
 

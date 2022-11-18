@@ -4,9 +4,6 @@ import { ethers } from "hardhat";
 
 import { solidity } from "ethereum-waffle";
 
-//@ts-ignore
-import { constants } from "@openzeppelin/test-helpers";
-
 import { Unicrow } from "../types/Unicrow";
 
 import { UnicrowArbitrator } from "../types/UnicrowArbitrator";
@@ -35,7 +32,7 @@ describe("UnicrowArbitrator", function () {
   let payCommon: any;
   let payEther: any;
 
-  const { ZERO_ADDRESS } = constants;
+  const { AddressZero: ZERO_ADDRESS } = ethers.constants;
 
   const escrowValue = 9191;
   const escrowValueParsed = 9191;

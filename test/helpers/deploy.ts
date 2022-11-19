@@ -1,39 +1,29 @@
 
 import { getContractAddress } from "@ethersproject/address";
 import { ethers } from "hardhat";
-import { UnicrowArbitrator__factory } from "../../types/factories/UnicrowArbitrator__factory";
-import { UnicrowClaim__factory } from "../../types/factories/UnicrowClaim__factory";
-import { UnicrowDispute__factory } from "../../types/factories/UnicrowDispute__factory";
-import { Unicrow__factory } from "../../types/factories/Unicrow__factory";
-import { FakeToken__factory } from "../../types/factories/FakeToken__factory";
-import { FakeToken } from "../../types/FakeToken";
-import { Unicrow } from "../../types/Unicrow";
-import { UnicrowArbitrator } from "../../types/UnicrowArbitrator";
-import { UnicrowClaim } from "../../types/UnicrowClaim";
-import { UnicrowDispute } from "../../types/UnicrowDispute";
 
 const UNICROW_FEE = 0 // bips;
 
 export const GetFactories = async () => {
-      const UnicrowFactory = (await ethers.getContractFactory(
+      const UnicrowFactory = await ethers.getContractFactory(
         "Unicrow"
-      )) as Unicrow__factory;
+      );
   
-      const UnicrowClaimFactory = (await ethers.getContractFactory(
+      const UnicrowClaimFactory = await ethers.getContractFactory(
         "UnicrowClaim"
-      )) as UnicrowClaim__factory;
+      );
   
-      const UnicrowDisputeFactory = (await ethers.getContractFactory(
+      const UnicrowDisputeFactory = await ethers.getContractFactory(
         "UnicrowDispute"
-      )) as UnicrowDispute__factory;
+      );
   
-      const UnicrowArbitratorFactory = (await ethers.getContractFactory(
+      const UnicrowArbitratorFactory = await ethers.getContractFactory(
         "UnicrowArbitrator"
-      )) as UnicrowArbitrator__factory;
+      );
 
-      const FakeTokenFactory = (await ethers.getContractFactory(
+      const FakeTokenFactory = await ethers.getContractFactory(
         "FakeToken"
-      )) as FakeToken__factory;
+      );
 
       return {
         UnicrowFactory,
@@ -102,19 +92,19 @@ export const setup = async () => {
         UnicrowArbitratorAddressNonce,
     } = await predictAddresses();
     
-    const unicrow : Unicrow = await UnicrowFactory.deploy(UnicrowClaimAddressNonce, UnicrowArbitratorAddressNonce, UnicrowDisputeAddressNonce, treasury.address, UNICROW_FEE);
+    const unicrow = await UnicrowFactory.deploy(UnicrowClaimAddressNonce, UnicrowArbitratorAddressNonce, UnicrowDisputeAddressNonce, treasury.address, UNICROW_FEE);
     await unicrow.deployed();
 
-    const unicrowClaim: UnicrowClaim = await UnicrowClaimFactory.deploy(UnicrowAddressNonce, UnicrowArbitratorAddressNonce, treasury.address);
+    const unicrowClaim = await UnicrowClaimFactory.deploy(UnicrowAddressNonce, UnicrowArbitratorAddressNonce, treasury.address);
     await unicrowClaim.deployed();
 
-    const unicrowDispute: UnicrowDispute = await UnicrowDisputeFactory.deploy(UnicrowAddressNonce, UnicrowClaimAddressNonce, UnicrowArbitratorAddressNonce);
+    const unicrowDispute = await UnicrowDisputeFactory.deploy(UnicrowAddressNonce, UnicrowClaimAddressNonce, UnicrowArbitratorAddressNonce);
     await unicrowDispute.deployed();
 
-    const unicrowArbitrator: UnicrowArbitrator = await UnicrowArbitratorFactory.deploy(UnicrowAddressNonce, UnicrowClaimAddressNonce);
+    const unicrowArbitrator = await UnicrowArbitratorFactory.deploy(UnicrowAddressNonce, UnicrowClaimAddressNonce);
     await unicrowArbitrator.deployed();
 
-    const fakeToken: FakeToken = await FakeTokenFactory.deploy("FakeToken", "CROW");
+    const fakeToken = await FakeTokenFactory.deploy("FakeToken", "CROW");
     await fakeToken.deployed();
     
     return {

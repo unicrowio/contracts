@@ -1,7 +1,6 @@
 {
-  "name": "@unicrow/contract",
+  "name": "@unicrowio/contracts",
   "version": "1.0.0",
-  "main": "index.js",
   "license": "MIT",
   "scripts": {
     "build": "yarn run clean && yarn hardhat compile",

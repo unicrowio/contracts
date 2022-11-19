@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "build": "yarn run clean && yarn hardhat compile",
-    "clean": "rm -rf cache && rm -rf types && rm -rf artifacts"
+    "build": "yarn clean && hardhat compile",
+    "clean": "hardhat clean",
+    "test": "hardhat test"
   },
   "devDependencies": {
     "@ethersproject/address": "5.7.0",

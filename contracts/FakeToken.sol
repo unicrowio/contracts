@@ -3,7 +3,6 @@
 pragma solidity ^0.8.7;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 /**
  * @title ToyToken
@@ -12,8 +11,6 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
  * `ERC20` functions.
  */
 contract FakeToken is ERC20 {
-    using SafeERC20 for IERC20;
-
     /**
      * @dev Constructor that gives msg.sender all of existing tokens.
      */

@@ -16,12 +16,12 @@ yarn install
 
 Compile the contracts:
 ```
-yarn hardhat compile
+yarn build
 ```
 
 Run the tests:
 ```
-yarn hardhat test
+yarn test
 ```
 
 ## Deploy

@@ -14,6 +14,7 @@ import { FakeToken } from "../types/contracts/FakeToken";
 
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { setup } from "./helpers/deploy";
+import { PayType } from "./helpers/types";
 
 chai.use(solidity);
 
@@ -23,27 +24,23 @@ describe("UnicrowArbitrator", function () {
   let unicrowDisputeContract: UnicrowDispute;
   let unicrowArbitratorContract: UnicrowArbitrator;
 
-  let owner: SignerWithAddress;
   let buyer: SignerWithAddress;
   let bob: SignerWithAddress;
   let seller: SignerWithAddress;
   let jess: SignerWithAddress;
 
-  let payCommon: any;
-  let payEther: any;
+  let payCommon: PayType;
 
   const { AddressZero: ZERO_ADDRESS } = ethers.constants;
 
   const escrowValue = 9191;
   const escrowValueParsed = 9191;
 
-  const escrowValueEth = 5;
-
   const escrowId = 0;
 
   beforeEach(async () => {
     // Get the list of accounts
-    [owner, buyer, seller, bob, jess] = await ethers.getSigners();
+    [, buyer, seller, bob, jess] = await ethers.getSigners();
 
     const { 
       unicrow,
@@ -71,16 +68,6 @@ describe("UnicrowArbitrator", function () {
       amount: escrowValue,
     };
 
-    payEther = {
-      buyer: buyer.address,
-      seller: seller.address,
-      marketplace: ZERO_ADDRESS,
-      currency: ZERO_ADDRESS,
-      marketplaceFee: 0,
-      challengePeriod: 300,
-      challengeExtension: 0,
-      amount: escrowValueEth,
-    };
   });
   
   context("When deposit with arbitrator happens", function () {
@@ -360,7 +347,7 @@ describe("UnicrowArbitrator", function () {
 
       const { split } = await unicrowContract.getEscrow(escrowId);
 
-      const [b, s, m, c ] = split;
+      const [ , , , c ] = split;
 
       const expectedResult = [4950, 4950, 0, 0];
 

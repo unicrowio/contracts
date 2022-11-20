@@ -3,15 +3,18 @@ import chai, { expect } from "chai";
 import { ethers, network } from "hardhat";
 import { solidity } from "ethereum-waffle";
 
-import { Unicrow } from "../types/Unicrow";
-import { UnicrowDispute } from "../types/UnicrowDispute";
+import { Unicrow } from "../types/contracts/Unicrow";
+import { UnicrowDispute } from "../types/contracts/UnicrowDispute";
 
-import { FakeToken } from "../types/FakeToken";
+import { FakeToken } from "../types/contracts/FakeToken";
 
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { setup } from "./helpers/deploy";
+import { PayType } from "./helpers/types";
 
 chai.use(solidity);
+
+
 
 describe("Unicrow", function () {
   let unicrowContract: Unicrow;
@@ -23,8 +26,8 @@ describe("Unicrow", function () {
   let bob: SignerWithAddress;
   let seller: SignerWithAddress;
 
-  let payCommon: any;
-  let payEther: any;
+  let payCommon: PayType;
+  let payEther: PayType;
 
   const { AddressZero: ZERO_ADDRESS } = ethers.constants;
 

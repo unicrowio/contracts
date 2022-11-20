@@ -12,6 +12,7 @@ import { FakeToken } from "../types/contracts/FakeToken";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import { setup } from "./helpers/deploy";
+import { PayType } from "./helpers/types";
 
 chai.use(solidity);
 
@@ -23,15 +24,14 @@ describe("UnicrowClaim", function () {
   let unicrowArbitratorContract: UnicrowArbitrator;
   let crowToken: FakeToken;
 
-  let owner: SignerWithAddress;
   let buyer: SignerWithAddress;
   let bob: SignerWithAddress;
   let seller: SignerWithAddress;
   let marketplace: SignerWithAddress;
   let treasury: SignerWithAddress;
 
-  let payCommon: any;
-  let payEther: any;
+  let payCommon: PayType;
+  let payEther: PayType;
 
   const { AddressZero: ZERO_ADDRESS } = ethers.constants;
 
@@ -44,7 +44,7 @@ describe("UnicrowClaim", function () {
 
   beforeEach(async () => {
     // Get the list of accounts
-    [owner, buyer, seller, bob, marketplace, treasury] = await ethers.getSigners();
+    [ , buyer, seller, bob, marketplace, treasury] = await ethers.getSigners();
     
     const {
       unicrow,

@@ -69,7 +69,7 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
      * @param escrowId Id of the escrow to check
      * @param caller Address to check against
      */
-    modifier isEscrowMember(uint256 escrowId, address caller) {
+    modifier onlyEscrowMember(uint256 escrowId, address caller) {
         require(_isEscrowBuyer(escrowId, caller) || _isEscrowSeller(escrowId, caller), "2-004");
         _;
     }
@@ -78,13 +78,13 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
      * @dev Checks if the caller is a seller in an escrow with the provided id
      * @param escrowId Id of the escrow to check
      */
-    modifier isEscrowSeller(uint256 escrowId) {
+    modifier onlyEscrowSeller(uint256 escrowId) {
         require(_isEscrowSeller(escrowId, _msgSender()));
         _;
     }
 
     /// @dev Checks if the caller is the Unicrow's main escrow contract
-    modifier isUnicrow() {
+    modifier onlyUnicrow() {
         require(_msgSender() == address(unicrow));
         _;
     }
@@ -94,7 +94,7 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
         uint256 escrowId,
         address arbitrator,
         uint16 arbitratorFee
-    ) external override isUnicrow {
+    ) external override onlyUnicrow {
         require(arbitrator != address(0));
 
         // Make sure the arbitrator is neither seller nor buyer in the escrow
@@ -117,7 +117,7 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
         uint256 escrowId,
         address arbitrator,
         uint16 arbitratorFee
-    ) external override isEscrowMember(escrowId, _msgSender()) {
+    ) external override onlyEscrowMember(escrowId, _msgSender()) {
         Arbitrator storage arbitratorData = escrowArbitrator[escrowId];
 
         // Check that arbitrator hasnt't been set already
@@ -148,7 +148,7 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
     function approveArbitrator(uint256 escrowId, address validationAddress, uint16 validation)
         external
         override
-        isEscrowMember(escrowId, _msgSender())
+        onlyEscrowMember(escrowId, _msgSender())
     {
         Arbitrator memory arbitratorData = getArbitratorData(escrowId);
 

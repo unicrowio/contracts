@@ -237,65 +237,53 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
         uint16 calculatedBuyerArbitratorFee;
 
         // Calculate buyer's portion of the arbitrator fee
-        unchecked {
-            calculatedBuyerArbitratorFee = uint16(
-                uint256(currentSplit[WHO_ARBITRATOR])
-                     * currentSplit[WHO_BUYER]
-                     / _100_PCT_IN_BIPS
-            );
-        }
+        calculatedBuyerArbitratorFee = uint16(
+            uint256(currentSplit[WHO_ARBITRATOR])
+                    * currentSplit[WHO_BUYER]
+                    / _100_PCT_IN_BIPS
+        );
 
         // seller's portion of the arbitrator fee
-        unchecked {
-            calculatedSellerArbitratorFee = uint16(
-                uint256(currentSplit[WHO_ARBITRATOR])
+        calculatedSellerArbitratorFee = uint16(
+            uint256(currentSplit[WHO_ARBITRATOR])
+                * currentSplit[WHO_SELLER]
+                / _100_PCT_IN_BIPS
+        );
+
+        // protocol fee
+        if (currentSplit[WHO_UNICROW] > 0) {
+            split[WHO_UNICROW] = uint16(
+                uint256(currentSplit[WHO_UNICROW])
                     * currentSplit[WHO_SELLER]
                     / _100_PCT_IN_BIPS
             );
         }
 
-        // protocol fee
-        if (currentSplit[WHO_UNICROW] > 0) {
-            unchecked {
-                split[WHO_UNICROW] = uint16(
-                    uint256(currentSplit[WHO_UNICROW])
-                        * currentSplit[WHO_SELLER]
-                        / _100_PCT_IN_BIPS
-                );
-            }
-        }
-
         // marketplace fee
         if (currentSplit[WHO_MARKETPLACE] > 0) {
-            unchecked {
-                split[WHO_MARKETPLACE] = uint16(
-                    uint256(currentSplit[WHO_MARKETPLACE])
-                        * currentSplit[WHO_SELLER]
-                        / _100_PCT_IN_BIPS
-                );
-            }
+            split[WHO_MARKETPLACE] = uint16(
+                uint256(currentSplit[WHO_MARKETPLACE])
+                    * currentSplit[WHO_SELLER]
+                    / _100_PCT_IN_BIPS
+            );
         }
 
         // Substract buyer's portion of the arbitartor fee from their share (if any)
         if(currentSplit[WHO_BUYER] > 0) {
-            unchecked {
-                split[WHO_BUYER] = uint16(
-                    uint256(currentSplit[WHO_BUYER])
-                         - calculatedBuyerArbitratorFee
-                    );
-            }
+            split[WHO_BUYER] = uint16(
+                uint256(currentSplit[WHO_BUYER])
+                        - calculatedBuyerArbitratorFee
+                );
         }
 
         // Marketplace, protocol, and seller's portion of the arbitartor fee are substracted from seller's share
         if(currentSplit[WHO_SELLER] > 0) {
-            unchecked {
-                split[WHO_SELLER] = uint16(
-                    uint256(currentSplit[WHO_SELLER])
-                        - split[WHO_UNICROW]
-                        - split[WHO_MARKETPLACE]
-                        - calculatedSellerArbitratorFee
-                    );
-            }
+            split[WHO_SELLER] = uint16(
+                uint256(currentSplit[WHO_SELLER])
+                    - split[WHO_UNICROW]
+                    - split[WHO_MARKETPLACE]
+                    - calculatedSellerArbitratorFee
+                );
         }
 
         return split;

@@ -37,7 +37,7 @@ interface IUnicrow {
   /**
    * @notice Refund 100% of the buyer payment (all fees are waived).
    * @dev Can be called only by the Seller
-   * @param escrowId id of the escrow to be refunded
+   * @param escrowId ID of the escrow to be refunded
    */
   function refund(uint escrowId) external;
 
@@ -62,9 +62,9 @@ interface IUnicrow {
     ) external;
 
   /**
-   * Calculating the final splits (incl. fees) based on how the payment is concluded.
-   * @dev The currentSplits are not expected to equal 100% in total. Buyer and seller splits should equal 100 based
-   * @dev on how the payment is settled, other splits represent fees which will get reduced and deducted accordingly
+   * @notice Calculating the final splits (incl. fees) based on how the payment is concluded.
+   * @dev The currentSplit is not expected to equal 100% in total. Buyer and seller splits should equal 100 based
+   * on how the payment is settled, other splits represent fees which will get reduced and deducted accordingly
    * @param currentSplit Current splits in bips
    */
   function splitCalculation(

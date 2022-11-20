@@ -293,12 +293,12 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
         address[5] memory addresses,
         address currency
     ) internal {
+        unicrow.setClaimed(escrowId);
+
         for (uint256 i = 0; i < amounts.length; i++) {
             if (amounts[i] > 0) {
                 unicrow.sendEscrowShare(addresses[i], amounts[i], currency);
             }
         }
-
-        unicrow.setClaimed(escrowId);
     }
 }

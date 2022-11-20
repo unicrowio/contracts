@@ -91,19 +91,19 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
     }
 
     /// Check that Unicrow's claim contract is calling this
-    modifier isUnicrowClaim() {
+    modifier onlyUnicrowClaim() {
         require(_msgSender() == address(unicrowClaim));
         _;
     }
 
     /// Check that arbitration or dispute contract is calling this
-    modifier isUnicrowArbitratorOrDispute() {
+    modifier onlyUnicrowArbitratorOrDispute() {
         require(_msgSender() == address(unicrowArbitrator) || _msgSender() == address(unicrowDispute));
         _;
     }
 
     /// Check that dispute contract is calling this
-    modifier isUnicrowDispute() {
+    modifier onlyUnicrowDispute() {
         require(_msgSender() == address(unicrowDispute));
         _;
     }
@@ -264,7 +264,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         int16[2] calldata consensus,
         uint64 challengeStart,
         uint64 challengeEnd
-    ) external override isUnicrowDispute {
+    ) external override onlyUnicrowDispute {
         escrows[escrowId].split = split;
         escrows[escrowId].consensus = consensus;
         escrows[escrowId].challengePeriodStart = challengeStart;
@@ -325,7 +325,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         address to,
         uint256 amount,
         address currency
-    ) public isUnicrowClaim {
+    ) public onlyUnicrowClaim {
          if(currency == address(0)) {
             (bool success, ) = to.call{value: amount}("");
             require(success, "1-012");
@@ -343,7 +343,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         uint256 escrowId,
         uint16[4] calldata split,
         int16[2] calldata consensus
-    ) external override isUnicrowArbitratorOrDispute {
+    ) external override onlyUnicrowArbitratorOrDispute {
         escrows[escrowId].split = split;
         escrows[escrowId].consensus = consensus;
     }
@@ -389,7 +389,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
     }
 
     /// @inheritdoc IUnicrow
-    function setClaimed(uint256 escrowId) external override isUnicrowClaim {
+    function setClaimed(uint256 escrowId) external override onlyUnicrowClaim {
         escrows[escrowId].claimed = 1;
     }
 }

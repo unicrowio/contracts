@@ -50,7 +50,6 @@ describe("Unicrow", function () {
     
     await fakeTokenContract.transfer(buyer.address, 1000000);
     await fakeTokenContract.transfer(seller.address, 10000);
-    //@ts-ignore
     payCommon = {
       buyer: buyer.address,
       seller: seller.address,
@@ -79,11 +78,9 @@ describe("Unicrow", function () {
       // Buyer needs to approve escrowValue allowance to unicrowContract contract
       await fakeTokenContract.connect(buyer).approve(unicrowContract.address, escrowValue);
 
-      //@ts-ignore
       await expect(
         unicrowContract.connect(buyer).pay(
           {
-            //@ts-ignore
             ...payCommon,
           },
           ZERO_ADDRESS,
@@ -98,11 +95,9 @@ describe("Unicrow", function () {
       // Buyer needs to approve escrowValue allowance to unicrowContract contract
       await fakeTokenContract.connect(buyer).approve(unicrowContract.address, escrowValue);
 
-      //@ts-ignore
       await expect(
         unicrowContract.connect(buyer).pay(
           {
-            //@ts-ignore
             ...payCommon,
           },
           ZERO_ADDRESS,
@@ -123,11 +118,9 @@ describe("Unicrow", function () {
       // Buyer needs to approve escrowValue allowance to unicrowContract contract
       await fakeTokenContract.connect(buyer).approve(unicrowContract.address, escrowValue);
 
-      //@ts-ignore
       await expect(
         unicrowContract.connect(buyer).pay(
           {
-            //@ts-ignore
             ...payEther,
           },
           ZERO_ADDRESS,
@@ -146,11 +139,9 @@ describe("Unicrow", function () {
       // Buyer needs to approve escrowValue allowance to unicrowContract contract
       await fakeTokenContract.connect(buyer).approve(unicrowContract.address, escrowValue);
 
-      //@ts-ignore
       await expect(
         unicrowContract.connect(buyer).pay(
           {
-            //@ts-ignore
             ...payCommon,
           },
           ZERO_ADDRESS,
@@ -162,11 +153,9 @@ describe("Unicrow", function () {
 
       await fakeTokenContract.connect(buyer).approve(unicrowContract.address, escrowValue);
 
-      //@ts-ignore
       await expect(
         unicrowContract.connect(buyer).pay(
           {
-            //@ts-ignore
             ...payCommon,
           },
           ZERO_ADDRESS,
@@ -183,11 +172,11 @@ describe("Unicrow", function () {
       // Buyer needs to approve escrowValue allowance to unicrowContract contract
       await fakeTokenContract.connect(buyer).approve(unicrowContract.address, escrowValue);
 
-      //@ts-ignore
+      
       await expect(
         unicrowContract.connect(buyer).pay(
           {
-            //@ts-ignore
+            
             ...payCommon,
           },
           ZERO_ADDRESS,
@@ -202,7 +191,6 @@ describe("Unicrow", function () {
       await expect(
         unicrowContract.connect(buyer).pay(
           {
-            //@ts-ignore
             ...payEther,
           },
           ZERO_ADDRESS,
@@ -223,7 +211,6 @@ describe("Unicrow", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -242,7 +229,7 @@ describe("Unicrow", function () {
     it("should be able to seller refund", async function () {
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
+          
           ...payEther,
         },
         ZERO_ADDRESS,
@@ -262,7 +249,6 @@ describe("Unicrow", function () {
     it("should be able to seller refund after a challenge", async function () {
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payEther,
         },
         ZERO_ADDRESS,
@@ -291,7 +277,6 @@ describe("Unicrow", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -309,7 +294,6 @@ describe("Unicrow", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -328,7 +312,6 @@ describe("Unicrow", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -350,7 +333,6 @@ describe("Unicrow", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -366,8 +348,7 @@ describe("Unicrow", function () {
       await fakeTokenContract.connect(buyer).approve(unicrowContract.address, escrowValue);
 
       await unicrowContract.connect(buyer).pay(
-        {
-          //@ts-ignore
+        {   
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -387,7 +368,6 @@ describe("Unicrow", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -413,7 +393,6 @@ describe("Unicrow", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
           challengePeriod: 60 * 60 * 24 * 7,
         },
@@ -452,7 +431,6 @@ describe("Unicrow", function () {
       // Listen for Deposit event for a successful funded unicrowContract
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
           challengePeriod: 100000,
         },
@@ -474,7 +452,6 @@ describe("Unicrow", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -493,7 +470,6 @@ describe("Unicrow", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -501,9 +477,7 @@ describe("Unicrow", function () {
       );
 
       const newSplit = [5000, 5000];
-      const consensus = [1, -1];
-
-      //@ts-ignore
+      
       await expect(
         unicrowDisputeContract.connect(seller).offerSettlement(escrowId, [5000, 5000])
       ).to.emit(unicrowDisputeContract, "SettlementOffer");
@@ -525,7 +499,6 @@ describe("Unicrow", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -542,17 +515,12 @@ describe("Unicrow", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
         0
       );
 
-      const newSplit = [5000, 5000];
-      const consensus = [1, -1];
-
-      //@ts-ignore
       await expect(
         unicrowDisputeContract.connect(seller).offerSettlement(escrowId, [5000, 5000])
       ).to.emit(unicrowDisputeContract, "SettlementOffer");
@@ -571,7 +539,6 @@ describe("Unicrow", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -590,7 +557,6 @@ describe("Unicrow", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -600,10 +566,8 @@ describe("Unicrow", function () {
       const newSplit = [5000, 5000];
       const consensus = [1, -1];
 
-      //@ts-ignore
       await unicrowDisputeContract.connect(buyer).challenge(escrowId);
 
-      //@ts-ignore
       await expect(
         unicrowDisputeContract.connect(seller).offerSettlement(escrowId, [5000, 5000])
       ).to.emit(unicrowDisputeContract, "SettlementOffer");
@@ -624,7 +588,6 @@ describe("Unicrow", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -634,10 +597,8 @@ describe("Unicrow", function () {
       const newSplit = [5000, 5000];
       const consensus = [1, -1];
 
-      //@ts-ignore
       await unicrowDisputeContract.connect(buyer).challenge(escrowId);
 
-      //@ts-ignore
       await expect(
         unicrowDisputeContract.connect(seller).offerSettlement(escrowId, [5000, 5000])
       ).to.emit(unicrowDisputeContract, "SettlementOffer");
@@ -658,7 +619,6 @@ describe("Unicrow", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         bob.address,
@@ -669,7 +629,6 @@ describe("Unicrow", function () {
 
       await unicrowDisputeContract.connect(buyer).challenge(escrowId);
 
-      //@ts-ignore
       await expect(
         unicrowDisputeContract.connect(seller).offerSettlement(escrowId, [5000, 5000])
       ).to.emit(unicrowDisputeContract, "SettlementOffer");
@@ -682,7 +641,6 @@ describe("Unicrow", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -703,7 +661,6 @@ describe("Unicrow", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -720,7 +677,6 @@ describe("Unicrow", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -742,7 +698,6 @@ describe("Unicrow", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -751,7 +706,6 @@ describe("Unicrow", function () {
 
       await unicrowDisputeContract.connect(buyer).challenge(escrowId);
 
-      const consensus = [1, 1];
 
       await expect(unicrowContract.connect(seller).release(escrowId)).to.be.revertedWith(
         "1-025"
@@ -763,7 +717,7 @@ describe("Unicrow", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
+          
           ...payCommon,
         },
         ZERO_ADDRESS,

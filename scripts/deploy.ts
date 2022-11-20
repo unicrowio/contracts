@@ -17,7 +17,7 @@ async function main() {
 
   console.log( `Deploying contracts with the account: ${deployer.address}`);
 
-  let transactionCount = await deployer.getTransactionCount();
+  const transactionCount = await deployer.getTransactionCount();
 
   const UnicrowContractAddress = getContractAddress({
     from: deployer.address,

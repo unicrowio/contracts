@@ -4,7 +4,7 @@ import { ethers } from "hardhat";
 
 import { solidity } from "ethereum-waffle";
 
-import { Unicrow } from "../types/contracts/Unicrow";
+import { EscrowInputStruct, Unicrow } from "../types/contracts/Unicrow";
 
 import { UnicrowArbitrator } from "../types/contracts/UnicrowArbitrator";
 
@@ -14,7 +14,6 @@ import { FakeToken } from "../types/contracts/FakeToken";
 
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { setup } from "./helpers/deploy";
-import { PayType } from "./helpers/types";
 
 chai.use(solidity);
 
@@ -29,7 +28,7 @@ describe("UnicrowArbitrator", function () {
   let seller: SignerWithAddress;
   let jess: SignerWithAddress;
 
-  let payCommon: PayType;
+  let payCommon: EscrowInputStruct;
 
   const { AddressZero: ZERO_ADDRESS } = ethers.constants;
 
@@ -58,7 +57,6 @@ describe("UnicrowArbitrator", function () {
     await crowToken.transfer(buyer.address, 1000000);
     await crowToken.transfer(seller.address, 10000);
     payCommon = {
-      buyer: buyer.address,
       seller: seller.address,
       marketplace: ZERO_ADDRESS,
       currency: crowToken.address,

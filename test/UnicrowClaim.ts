@@ -1,11 +1,7 @@
 import chai, { expect } from "chai";
-import web3 from "web3";
 
 import { ethers, network } from "hardhat";
 import { solidity } from "ethereum-waffle";
-
-//@ts-ignore
-import { constants } from "@openzeppelin/test-helpers";
 
 import { Unicrow } from "../types/Unicrow";
 import { UnicrowClaim } from "../types/UnicrowClaim";
@@ -37,14 +33,14 @@ describe("UnicrowClaim", function () {
   let payCommon: any;
   let payEther: any;
 
-  const { ZERO_ADDRESS } = constants;
+  const { AddressZero: ZERO_ADDRESS } = ethers.constants;
 
   const escrowValue = ethers.utils.parseUnits("100", 18);
 
   const escrowValueEth = ethers.utils.parseUnits("100", 18);
 
   const escrowId = 0;
-  const secondEscrowId = String(web3.utils.sha3("an escrow account2"));
+  const secondEscrowId = String(ethers.utils.id("an escrow account2"));
 
   beforeEach(async () => {
     // Get the list of accounts

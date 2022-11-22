@@ -3,7 +3,6 @@
 pragma solidity ^0.8.7;
 
 import "@openzeppelin/contracts/utils/Context.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -18,8 +17,6 @@ import "./UnicrowTypes.sol";
  * @title Contract for managing claims from Unicrow's escrow
  */
 contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
-    using SafeMath for uint256;
-
     /// Reference to the main escrow contract (immutable)
     Unicrow public unicrow;
 
@@ -263,20 +260,20 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
         uint256[5] memory payments;
 
         // Multiply all the splits by the total amount
-        payments[WHO_BUYER] = uint256(split[WHO_BUYER]).mul(amount).div(_100_PCT_IN_BIPS);
-        payments[WHO_SELLER] = uint256(split[WHO_SELLER]).mul(amount).div(_100_PCT_IN_BIPS);
-        payments[WHO_MARKETPLACE] = uint256(split[WHO_MARKETPLACE]).mul(amount).div(_100_PCT_IN_BIPS);
-        payments[WHO_PROTOCOL] = uint256(split[WHO_PROTOCOL]).mul(amount).div(_100_PCT_IN_BIPS);
+        payments[WHO_BUYER] = uint256(split[WHO_BUYER]) * amount / _100_PCT_IN_BIPS;
+        payments[WHO_SELLER] = uint256(split[WHO_SELLER]) * amount / _100_PCT_IN_BIPS;
+        payments[WHO_MARKETPLACE] = uint256(split[WHO_MARKETPLACE]) * amount / _100_PCT_IN_BIPS;
+        payments[WHO_PROTOCOL] = uint256(split[WHO_PROTOCOL]) * amount / _100_PCT_IN_BIPS;
 
         if(!arbitrated) {
             // If the payment wasn't arbitrated, the arbitrator fee is calculated from seller's share
             // (normally 100%, but could be 0 for refund)
-            uint16 arbitratorFee_ = uint16(uint256(arbitratorFee).mul(fullSellerSplit).div(_100_PCT_IN_BIPS));
-            payments[WHO_ARBITRATOR] = uint256(arbitratorFee_).mul(amount).div(_100_PCT_IN_BIPS);
+            uint16 arbitratorFee_ = uint16(uint256(arbitratorFee) * fullSellerSplit / _100_PCT_IN_BIPS);
+            payments[WHO_ARBITRATOR] = uint256(arbitratorFee_) * amount / _100_PCT_IN_BIPS;
         } else {
             // If the arbitrator decided the payment, they get their full fee
             // (in such case, buyer's split was reduced in the calling function)
-            payments[WHO_ARBITRATOR] = uint256(arbitratorFee).mul(amount).div(_100_PCT_IN_BIPS);
+            payments[WHO_ARBITRATOR] = uint256(arbitratorFee)* amount / _100_PCT_IN_BIPS;
         }
 
         return payments;
@@ -295,12 +292,12 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
         address[5] memory addresses,
         address currency
     ) internal {
+        unicrow.setClaimed(escrowId);
+
         for (uint256 i = 0; i < amounts.length; i++) {
             if (amounts[i] > 0) {
                 unicrow.sendEscrowShare(addresses[i], amounts[i], currency);
             }
         }
-
-        unicrow.setClaimed(escrowId);
     }
 }

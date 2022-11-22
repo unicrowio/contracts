@@ -3,7 +3,6 @@
 pragma solidity ^0.8.7;
 
 import "@openzeppelin/contracts/utils/Context.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -18,7 +17,6 @@ import "./UnicrowTypes.sol";
 /// @title The primary Unicrow contract
 /// @notice Receives and distributes the payments, maintains and provides information about the escrow records, and allows basic operations
 contract Unicrow is ReentrancyGuard, IUnicrow, Context {
-    using SafeMath for uint256;
     using Counters for Counters.Counter;
 
     /// Generates unique escrow ID in incremental order
@@ -92,19 +90,19 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
     }
 
     /// Check that Unicrow's claim contract is calling this
-    modifier isUnicrowClaim() {
+    modifier onlyUnicrowClaim() {
         require(_msgSender() == address(unicrowClaim));
         _;
     }
 
     /// Check that arbitration or dispute contract is calling this
-    modifier isUnicrowArbitratorOrDispute() {
+    modifier onlyUnicrowArbitratorOrDispute() {
         require(_msgSender() == address(unicrowArbitrator) || _msgSender() == address(unicrowDispute));
         _;
     }
 
     /// Check that dispute contract is calling this
-    modifier isUnicrowDispute() {
+    modifier onlyUnicrowDispute() {
         require(_msgSender() == address(unicrowDispute));
         _;
     }
@@ -271,7 +269,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         int16[2] calldata consensus,
         uint64 challengeStart,
         uint64 challengeEnd
-    ) external override isUnicrowDispute {
+    ) external override onlyUnicrowDispute {
         escrows[escrowId].split = split;
         escrows[escrowId].consensus = consensus;
         escrows[escrowId].challengePeriodStart = challengeStart;
@@ -332,7 +330,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         address to,
         uint256 amount,
         address currency
-    ) public isUnicrowClaim {
+    ) public onlyUnicrowClaim {
          if(currency == address(0)) {
             (bool success, ) = to.call{value: amount}("");
             require(success, "1-012");
@@ -350,7 +348,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         uint256 escrowId,
         uint16[4] calldata split,
         int16[2] calldata consensus
-    ) external override isUnicrowArbitratorOrDispute {
+    ) external override onlyUnicrowArbitratorOrDispute {
         escrows[escrowId].split = split;
         escrows[escrowId].consensus = consensus;
     }
@@ -365,34 +363,26 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
 
         // Discount the protocol fee based on seller's share
         if (currentSplit[WHO_PROTOCOL] > 0) {
-            unchecked {
-                split[WHO_PROTOCOL] = uint16(
-                    uint256(currentSplit[WHO_PROTOCOL])
-                        .mul(currentSplit[WHO_SELLER])
-                        .div(_100_PCT_IN_BIPS)
-                );
-            }
+            split[WHO_PROTOCOL] = uint16(
+                uint256(currentSplit[WHO_PROTOCOL]) *
+                    currentSplit[WHO_SELLER] /
+                    _100_PCT_IN_BIPS
+            );
         }
 
         // Discount the marketplace fee based on the seller's share
         if (currentSplit[WHO_MARKETPLACE] > 0) {
-            unchecked {
-                split[WHO_MARKETPLACE] = uint16(
-                    uint256(currentSplit[WHO_MARKETPLACE])
-                        .mul(currentSplit[WHO_SELLER])
-                        .div(_100_PCT_IN_BIPS)
-                );
-            }
+            split[WHO_MARKETPLACE] = uint16(
+                uint256(currentSplit[WHO_MARKETPLACE]) *
+                    currentSplit[WHO_SELLER] /
+                    _100_PCT_IN_BIPS
+            );
         }
 
         // Discount the arbitrator's fee based on the seller's share
-        unchecked {
-            calculatedArbitratorFee = uint16(
-                uint256(currentSplit[WHO_ARBITRATOR]).mul(currentSplit[WHO_SELLER]).div(
-                    _100_PCT_IN_BIPS
-                )
-            );
-        }
+        calculatedArbitratorFee = uint16(
+            uint256(currentSplit[WHO_ARBITRATOR]) * currentSplit[WHO_SELLER] / _100_PCT_IN_BIPS
+        );
 
         // Calculate seller's final share by substracting all the fees
         unchecked {
@@ -404,7 +394,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
     }
 
     /// @inheritdoc IUnicrow
-    function setClaimed(uint256 escrowId) external override isUnicrowClaim {
+    function setClaimed(uint256 escrowId) external override onlyUnicrowClaim {
         escrows[escrowId].claimed = 1;
     }
 }

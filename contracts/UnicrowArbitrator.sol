@@ -3,7 +3,6 @@
 pragma solidity ^0.8.7;
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./Unicrow.sol";
 import "./interfaces/IUnicrowArbitrator.sol";
@@ -15,7 +14,6 @@ import "./UnicrowTypes.sol";
  * @notice Functionality for assigning an arbitrator to an escrow and for an arbitrator to decide a dispute
  */
 contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
-    using SafeMath for uint256;
     using Address for address payable;
 
     /// Reference to the main Unicrow contract
@@ -71,7 +69,7 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
      * @param escrowId Id of the escrow to check
      * @param caller Address to check against
      */
-    modifier isEscrowMember(uint256 escrowId, address caller) {
+    modifier onlyEscrowMember(uint256 escrowId, address caller) {
         require(_isEscrowBuyer(escrowId, caller) || _isEscrowSeller(escrowId, caller), "2-004");
         _;
     }
@@ -80,13 +78,13 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
      * @dev Checks if the caller is a seller in an escrow with the provided id
      * @param escrowId Id of the escrow to check
      */
-    modifier isEscrowSeller(uint256 escrowId) {
+    modifier onlyEscrowSeller(uint256 escrowId) {
         require(_isEscrowSeller(escrowId, _msgSender()));
         _;
     }
 
     /// @dev Checks if the caller is the Unicrow's main escrow contract
-    modifier isUnicrow() {
+    modifier onlyUnicrow() {
         require(_msgSender() == address(unicrow));
         _;
     }
@@ -96,7 +94,7 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
         uint256 escrowId,
         address arbitrator,
         uint16 arbitratorFee
-    ) external override isUnicrow {
+    ) external override onlyUnicrow {
         // Store arbitrator address and fee
         escrowArbitrator[escrowId].arbitrator = arbitrator;
         escrowArbitrator[escrowId].arbitratorFee = arbitratorFee;
@@ -112,7 +110,7 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
         uint256 escrowId,
         address arbitrator,
         uint16 arbitratorFee
-    ) external override isEscrowMember(escrowId, _msgSender()) {
+    ) external override onlyEscrowMember(escrowId, _msgSender()) {
         Arbitrator storage arbitratorData = escrowArbitrator[escrowId];
 
         // Check that arbitrator hasnt't been set already
@@ -143,7 +141,7 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
     function approveArbitrator(uint256 escrowId, address validationAddress, uint16 validation)
         external
         override
-        isEscrowMember(escrowId, _msgSender())
+        onlyEscrowMember(escrowId, _msgSender())
     {
         Arbitrator memory arbitratorData = getArbitratorData(escrowId);
 
@@ -232,65 +230,53 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
         uint16 calculatedBuyerArbitratorFee;
 
         // Calculate buyer's portion of the arbitrator fee
-        unchecked {
-            calculatedBuyerArbitratorFee = uint16(
-                uint256(currentSplit[WHO_ARBITRATOR])
-                    .mul(currentSplit[WHO_BUYER])
-                    .div(_100_PCT_IN_BIPS)
-            );
-        }
+        calculatedBuyerArbitratorFee = uint16(
+            uint256(currentSplit[WHO_ARBITRATOR])
+                    * currentSplit[WHO_BUYER]
+                    / _100_PCT_IN_BIPS
+        );
 
         // seller's portion of the arbitrator fee
-        unchecked {
-            calculatedSellerArbitratorFee = uint16(
-                uint256(currentSplit[WHO_ARBITRATOR])
-                    .mul(currentSplit[WHO_SELLER])
-                    .div(_100_PCT_IN_BIPS)
-            );
-        }
+        calculatedSellerArbitratorFee = uint16(
+            uint256(currentSplit[WHO_ARBITRATOR])
+                * currentSplit[WHO_SELLER]
+                / _100_PCT_IN_BIPS
+        );
 
         // protocol fee
         if (currentSplit[WHO_PROTOCOL] > 0) {
-            unchecked {
-                split[WHO_PROTOCOL] = uint16(
-                    uint256(currentSplit[WHO_PROTOCOL])
-                        .mul(currentSplit[WHO_SELLER])
-                        .div(_100_PCT_IN_BIPS)
-                );
-            }
+            split[WHO_PROTOCOL] = uint16(
+                uint256(currentSplit[WHO_PROTOCOL])
+                    * currentSplit[WHO_SELLER]
+                    / _100_PCT_IN_BIPS
+            );
         }
 
         // marketplace fee
         if (currentSplit[WHO_MARKETPLACE] > 0) {
-            unchecked {
-                split[WHO_MARKETPLACE] = uint16(
-                    uint256(currentSplit[WHO_MARKETPLACE])
-                        .mul(currentSplit[WHO_SELLER])
-                        .div(_100_PCT_IN_BIPS)
-                );
-            }
+            split[WHO_MARKETPLACE] = uint16(
+                uint256(currentSplit[WHO_MARKETPLACE])
+                    * currentSplit[WHO_SELLER]
+                    / _100_PCT_IN_BIPS
+            );
         }
 
         // Substract buyer's portion of the arbitartor fee from their share (if any)
         if(currentSplit[WHO_BUYER] > 0) {
-            unchecked {
-                split[WHO_BUYER] = uint16(
-                    uint256(currentSplit[WHO_BUYER])
-                        .sub(calculatedBuyerArbitratorFee)
-                    );
-            }
+            split[WHO_BUYER] = uint16(
+                uint256(currentSplit[WHO_BUYER])
+                        - calculatedBuyerArbitratorFee
+                );
         }
 
         // Marketplace, protocol, and seller's portion of the arbitartor fee are substracted from seller's share
         if(currentSplit[WHO_SELLER] > 0) {
-            unchecked {
-                split[WHO_SELLER] = uint16(
-                    uint256(currentSplit[WHO_SELLER])
-                        .sub(split[WHO_PROTOCOL])
-                        .sub(split[WHO_MARKETPLACE])
-                        .sub(calculatedSellerArbitratorFee)
-                    );
-            }
+            split[WHO_SELLER] = uint16(
+                uint256(currentSplit[WHO_SELLER])
+                    - split[WHO_PROTOCOL]
+                    - split[WHO_MARKETPLACE]
+                    - calculatedSellerArbitratorFee
+                );
         }
 
         return split;

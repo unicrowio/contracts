@@ -1,4 +1,7 @@
-node_modules
-.env
+# hardhat
 artifacts
 cache
+types
+
+node_modules
+.env

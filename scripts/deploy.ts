@@ -1,10 +1,6 @@
 import { ethers } from "hardhat";
 import dotenv from "dotenv";
 import { getContractAddress } from "@ethersproject/address";
-import { Unicrow__factory } from "../types/factories/Unicrow__factory";
-import { UnicrowDispute__factory } from "../types/factories/UnicrowDispute__factory";
-import { UnicrowArbitrator__factory } from "../types/factories/UnicrowArbitrator__factory";
-import { UnicrowClaim__factory } from "../types/factories/UnicrowClaim__factory";
 
 dotenv.config();
 
@@ -14,10 +10,10 @@ const UNICROW_FEE = 0 // bips;
 async function main() {
   const [deployer] = await ethers.getSigners();
 
-  const Unicrow = (await ethers.getContractFactory("Unicrow")) as Unicrow__factory;
-  const UnicrowDispute = (await ethers.getContractFactory("UnicrowDispute")) as UnicrowDispute__factory; 
-  const UnicrowArbitrator = (await ethers.getContractFactory("UnicrowArbitrator")) as UnicrowArbitrator__factory;
-  const UnicrowClaim = (await ethers.getContractFactory("UnicrowClaim")) as UnicrowClaim__factory;
+  const Unicrow = await ethers.getContractFactory("Unicrow");
+  const UnicrowDispute = await ethers.getContractFactory("UnicrowDispute");
+  const UnicrowArbitrator = await ethers.getContractFactory("UnicrowArbitrator");
+  const UnicrowClaim = await ethers.getContractFactory("UnicrowClaim");
 
   console.log( `Deploying contracts with the account: ${deployer.address}`);
 

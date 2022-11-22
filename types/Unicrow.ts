@@ -20,12 +20,12 @@ import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 
 export type EscrowStruct = {
   buyer: string;
+  challengeExtension: BigNumberish;
   seller: string;
   challengePeriodStart: BigNumberish;
-  challengePeriodEnd: BigNumberish;
-  challengeExtension: BigNumberish;
   marketplace: string;
   marketplaceFee: BigNumberish;
+  challengePeriodEnd: BigNumberish;
   currency: string;
   claimed: BigNumberish;
   consensus: [BigNumberish, BigNumberish];
@@ -35,11 +35,11 @@ export type EscrowStruct = {
 
 export type EscrowStructOutput = [
   string,
-  string,
-  BigNumber,
-  BigNumber,
   BigNumber,
   string,
+  BigNumber,
+  string,
+  BigNumber,
   BigNumber,
   string,
   number,
@@ -48,12 +48,12 @@ export type EscrowStructOutput = [
   BigNumber
 ] & {
   buyer: string;
+  challengeExtension: BigNumber;
   seller: string;
   challengePeriodStart: BigNumber;
-  challengePeriodEnd: BigNumber;
-  challengeExtension: BigNumber;
   marketplace: string;
   marketplaceFee: BigNumber;
+  challengePeriodEnd: BigNumber;
   currency: string;
   claimed: number;
   consensus: [number, number];
@@ -156,12 +156,12 @@ export interface UnicrowInterface extends utils.Interface {
   contractName: "Unicrow";
   functions: {
     "challenge(uint256,uint16[4],int16[2],uint64,uint64)": FunctionFragment;
-    "escrowFee()": FunctionFragment;
     "escrowIdCounter()": FunctionFragment;
     "getAllEscrowData(uint256)": FunctionFragment;
     "getEscrow(uint256)": FunctionFragment;
     "governanceAddress()": FunctionFragment;
     "pay((address,address,uint16,address,uint32,uint32,uint256),address,uint16)": FunctionFragment;
+    "protocolFee()": FunctionFragment;
     "refund(uint256)": FunctionFragment;
     "release(uint256)": FunctionFragment;
     "sendEscrowShare(address,uint256,address)": FunctionFragment;
@@ -185,7 +185,6 @@ export interface UnicrowInterface extends utils.Interface {
       BigNumberish
     ]
   ): string;
-  encodeFunctionData(functionFragment: "escrowFee", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "escrowIdCounter",
     values?: undefined
@@ -205,6 +204,10 @@ export interface UnicrowInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "pay",
     values: [EscrowInputStruct, string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "protocolFee",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "refund",
@@ -258,7 +261,6 @@ export interface UnicrowInterface extends utils.Interface {
   ): string;
 
   decodeFunctionResult(functionFragment: "challenge", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "escrowFee", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "escrowIdCounter",
     data: BytesLike
@@ -273,6 +275,10 @@ export interface UnicrowInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "pay", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "protocolFee",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "refund", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "release", data: BytesLike): Result;
   decodeFunctionResult(
@@ -392,8 +398,6 @@ export interface Unicrow extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    escrowFee(overrides?: CallOverrides): Promise<[number]>;
-
     escrowIdCounter(
       overrides?: CallOverrides
     ): Promise<[BigNumber] & { _value: BigNumber }>;
@@ -416,6 +420,8 @@ export interface Unicrow extends BaseContract {
       arbitratorFee: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    protocolFee(overrides?: CallOverrides): Promise<[number]>;
 
     refund(
       escrowId: BigNumberish,
@@ -483,8 +489,6 @@ export interface Unicrow extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  escrowFee(overrides?: CallOverrides): Promise<number>;
-
   escrowIdCounter(overrides?: CallOverrides): Promise<BigNumber>;
 
   getAllEscrowData(
@@ -505,6 +509,8 @@ export interface Unicrow extends BaseContract {
     arbitratorFee: BigNumberish,
     overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  protocolFee(overrides?: CallOverrides): Promise<number>;
 
   refund(
     escrowId: BigNumberish,
@@ -572,8 +578,6 @@ export interface Unicrow extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    escrowFee(overrides?: CallOverrides): Promise<number>;
-
     escrowIdCounter(overrides?: CallOverrides): Promise<BigNumber>;
 
     getAllEscrowData(
@@ -594,6 +598,8 @@ export interface Unicrow extends BaseContract {
       arbitratorFee: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    protocolFee(overrides?: CallOverrides): Promise<number>;
 
     refund(escrowId: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
@@ -699,8 +705,6 @@ export interface Unicrow extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    escrowFee(overrides?: CallOverrides): Promise<BigNumber>;
-
     escrowIdCounter(overrides?: CallOverrides): Promise<BigNumber>;
 
     getAllEscrowData(
@@ -721,6 +725,8 @@ export interface Unicrow extends BaseContract {
       arbitratorFee: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    protocolFee(overrides?: CallOverrides): Promise<BigNumber>;
 
     refund(
       escrowId: BigNumberish,
@@ -789,8 +795,6 @@ export interface Unicrow extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    escrowFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     escrowIdCounter(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getAllEscrowData(
@@ -811,6 +815,8 @@ export interface Unicrow extends BaseContract {
       arbitratorFee: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    protocolFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     refund(
       escrowId: BigNumberish,

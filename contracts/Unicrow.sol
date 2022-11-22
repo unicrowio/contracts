@@ -34,7 +34,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
     UnicrowDispute public immutable unicrowDispute;
 
     /// @notice Escrow fee in bips (can never be higher than 100)
-    uint16 public escrowFee;
+    uint16 public protocolFee;
 
     /// address of a governance contract (multisig initially, DAO governor eventually)
     address public governanceAddress;
@@ -76,14 +76,13 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         address unicrowArbitrator_,
         address unicrowDispute_,
         address governanceAddress_,
-        uint16 escrowFee_
+        uint16 protocolFee_
     ) {
         unicrowArbitrator = IUnicrowArbitrator(unicrowArbitrator_);
         unicrowClaim = IUnicrowClaim(unicrowClaim_);
         unicrowDispute = UnicrowDispute(unicrowDispute_);
         governanceAddress = governanceAddress_;
-
-        escrowFee = escrowFee_;
+        protocolFee = protocolFee_;
     }
 
     /// Check that the governance contract is calling this
@@ -124,6 +123,10 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         // The address that sent the payment is set as a buyer
         address buyer = _msgSender();
 
+        // Fee's cant exceed 100% of the payment value
+        require(arbitratorFee + input.marketplaceFee + protocolFee < 10000, "1-026");
+
+        // Payment can't use address(0)
         require(escrows[escrowId].buyer == address(0), "0-001");
 
         // Seller cannot be empty
@@ -140,15 +143,17 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
 
         // Check if the arbitrator was defined
         if (arbitrator != address(0)) {
+
+            // Arbitrator can't be seller or buyer
+            require(arbitrator != buyer && arbitrator != input.seller, "1-027");
+
             // Set the arbitrator in the arbitrator contract
             unicrowArbitrator.setArbitrator(escrowId, arbitrator, arbitratorFee);
         }
 
-        // Get current protocol fee
-        uint16 escrowFee_ = escrowFee;
-
         // Split array is how Unicrow maintains information about seller's and buyer's shares, and the fees
-        uint16[4] memory split = [0, 10000, input.marketplaceFee, escrowFee_];
+        uint16[4] memory split = [0, 10000, input.marketplaceFee, protocolFee];
+        
         // Set initial consensus to buyer = 0, seller = 1
         int16[2] memory consensus = [int16(0), int16(1)];
 
@@ -204,7 +209,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         escrow.split[WHO_BUYER] = 10000;
         escrow.split[WHO_SELLER] = 0;
         escrow.split[WHO_MARKETPLACE] = 0;
-        escrow.split[WHO_UNICROW] = 0;
+        escrow.split[WHO_PROTOCOL] = 0;
         
         // Keep record of number of challenges (for reputation purposes)
         escrow.consensus[WHO_BUYER] = abs8(escrow.consensus[WHO_BUYER]) + 1;
@@ -276,7 +281,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
     /// @inheritdoc IUnicrow
     function updateEscrowFee(uint16 fee) external override onlyGovernance {
         require(fee <= 100, "0-008");
-        escrowFee = fee;
+        protocolFee = fee;
     }
 
     /// @inheritdoc IUnicrow
@@ -359,10 +364,10 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         uint16 calculatedArbitratorFee;
 
         // Discount the protocol fee based on seller's share
-        if (currentSplit[WHO_UNICROW] > 0) {
+        if (currentSplit[WHO_PROTOCOL] > 0) {
             unchecked {
-                split[WHO_UNICROW] = uint16(
-                    uint256(currentSplit[WHO_UNICROW])
+                split[WHO_PROTOCOL] = uint16(
+                    uint256(currentSplit[WHO_PROTOCOL])
                         .mul(currentSplit[WHO_SELLER])
                         .div(_100_PCT_IN_BIPS)
                 );
@@ -391,7 +396,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
 
         // Calculate seller's final share by substracting all the fees
         unchecked {
-            split[WHO_SELLER] = currentSplit[WHO_SELLER] - split[WHO_UNICROW] - split[WHO_MARKETPLACE] - calculatedArbitratorFee;
+            split[WHO_SELLER] = currentSplit[WHO_SELLER] - split[WHO_PROTOCOL] - split[WHO_MARKETPLACE] - calculatedArbitratorFee;
             split[WHO_BUYER] = currentSplit[WHO_BUYER];
         }
 

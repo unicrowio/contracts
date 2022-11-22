@@ -399,7 +399,7 @@ describe("Unicrow", function () {
 
       const consensus = [1, -1];
 
-      const escrowFee = await unicrowContract.escrowFee();
+      const escrowFee = await unicrowContract.protocolFee();
       const split = [10000, 0, 0, escrowFee];
 
       await expect(unicrowDisputeContract.connect(buyer).challenge(escrowId)).to.emit(
@@ -434,7 +434,7 @@ describe("Unicrow", function () {
 
       const consensus = [2, -2];
 
-      const escrowFee = await unicrowContract.escrowFee();
+      const escrowFee = await unicrowContract.protocolFee();
       const split = [10000, 0, 0, escrowFee];
 
       await network.provider.send("evm_increaseTime", [60 * 60 * 24 * 10]);
@@ -656,7 +656,7 @@ describe("Unicrow", function () {
       ).to.deep.eq(seller.address);
     });
 
-    it("should be able to get settlement data", async function () {
+    it("should be able to change consensus offer", async function () {
       await fakeTokenContract.connect(buyer).approve(unicrowContract.address, escrowValue);
 
       await unicrowContract.connect(buyer).pay(
@@ -665,7 +665,7 @@ describe("Unicrow", function () {
           ...payCommon,
         },
         bob.address,
-        10000
+        0
       );
 
       const consensus = [1, -1];

@@ -24,8 +24,8 @@ export interface IUnicrowClaimInterface extends utils.Interface {
     "claim(uint256[])": FunctionFragment;
     "singleClaim(uint256)": FunctionFragment;
     "updateCrowRewards(address)": FunctionFragment;
+    "updateProtocolFeeAddress(address)": FunctionFragment;
     "updateStakingRewards(address)": FunctionFragment;
-    "updateUnicrowFeeAddress(address)": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -41,11 +41,11 @@ export interface IUnicrowClaimInterface extends utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(
-    functionFragment: "updateStakingRewards",
+    functionFragment: "updateProtocolFeeAddress",
     values: [string]
   ): string;
   encodeFunctionData(
-    functionFragment: "updateUnicrowFeeAddress",
+    functionFragment: "updateStakingRewards",
     values: [string]
   ): string;
 
@@ -59,11 +59,11 @@ export interface IUnicrowClaimInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "updateStakingRewards",
+    functionFragment: "updateProtocolFeeAddress",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "updateUnicrowFeeAddress",
+    functionFragment: "updateStakingRewards",
     data: BytesLike
   ): Result;
 
@@ -113,13 +113,13 @@ export interface IUnicrowClaim extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    updateStakingRewards(
-      crowRewards_: string,
+    updateProtocolFeeAddress(
+      protocolFeeAddress_: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    updateUnicrowFeeAddress(
-      unicrowFeeAddress_: string,
+    updateStakingRewards(
+      crowRewards_: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
@@ -139,13 +139,13 @@ export interface IUnicrowClaim extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  updateStakingRewards(
-    crowRewards_: string,
+  updateProtocolFeeAddress(
+    protocolFeeAddress_: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  updateUnicrowFeeAddress(
-    unicrowFeeAddress_: string,
+  updateStakingRewards(
+    crowRewards_: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -162,13 +162,13 @@ export interface IUnicrowClaim extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    updateStakingRewards(
-      crowRewards_: string,
+    updateProtocolFeeAddress(
+      protocolFeeAddress_: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    updateUnicrowFeeAddress(
-      unicrowFeeAddress_: string,
+    updateStakingRewards(
+      crowRewards_: string,
       overrides?: CallOverrides
     ): Promise<void>;
   };
@@ -191,13 +191,13 @@ export interface IUnicrowClaim extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    updateStakingRewards(
-      crowRewards_: string,
+    updateProtocolFeeAddress(
+      protocolFeeAddress_: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    updateUnicrowFeeAddress(
-      unicrowFeeAddress_: string,
+    updateStakingRewards(
+      crowRewards_: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
@@ -218,13 +218,13 @@ export interface IUnicrowClaim extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    updateStakingRewards(
-      crowRewards_: string,
+    updateProtocolFeeAddress(
+      protocolFeeAddress_: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    updateUnicrowFeeAddress(
-      unicrowFeeAddress_: string,
+    updateStakingRewards(
+      crowRewards_: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };

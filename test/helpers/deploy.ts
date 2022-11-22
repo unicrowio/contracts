@@ -37,7 +37,7 @@ export const GetFactories = async () => {
 export const predictAddresses = async () => {
     const [owner] = await ethers.getSigners();
 
-    let transactionCount = await owner.getTransactionCount()
+    const transactionCount = await owner.getTransactionCount()
 
     const UnicrowAddressNonce = getContractAddress({
         from: owner.address,
@@ -75,7 +75,7 @@ export const predictAddresses = async () => {
 
 export const setup = async () => {
 
-    const [owner, buyer, seller, bob, marketplace, treasury] = await ethers.getSigners();
+    const [, , , , , treasury] = await ethers.getSigners();
 
     const {
         UnicrowFactory,

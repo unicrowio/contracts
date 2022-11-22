@@ -4,13 +4,13 @@ import { ethers } from "hardhat";
 
 import { solidity } from "ethereum-waffle";
 
-import { Unicrow } from "../types/Unicrow";
+import { EscrowInputStruct, Unicrow } from "../types/contracts/Unicrow";
 
-import { UnicrowArbitrator } from "../types/UnicrowArbitrator";
+import { UnicrowArbitrator } from "../types/contracts/UnicrowArbitrator";
 
-import { UnicrowDispute } from "../types/UnicrowDispute";
+import { UnicrowDispute } from "../types/contracts/UnicrowDispute";
 
-import { FakeToken } from "../types/FakeToken";
+import { FakeToken } from "../types/contracts/FakeToken";
 
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { setup } from "./helpers/deploy";
@@ -23,27 +23,23 @@ describe("UnicrowArbitrator", function () {
   let unicrowDisputeContract: UnicrowDispute;
   let unicrowArbitratorContract: UnicrowArbitrator;
 
-  let owner: SignerWithAddress;
   let buyer: SignerWithAddress;
   let bob: SignerWithAddress;
   let seller: SignerWithAddress;
   let jess: SignerWithAddress;
 
-  let payCommon: any;
-  let payEther: any;
+  let payCommon: EscrowInputStruct;
 
   const { AddressZero: ZERO_ADDRESS } = ethers.constants;
 
   const escrowValue = 9191;
   const escrowValueParsed = 9191;
 
-  const escrowValueEth = 5;
-
   const escrowId = 0;
 
   beforeEach(async () => {
     // Get the list of accounts
-    [owner, buyer, seller, bob, jess] = await ethers.getSigners();
+    [, buyer, seller, bob, jess] = await ethers.getSigners();
 
     const { 
       unicrow,
@@ -60,9 +56,7 @@ describe("UnicrowArbitrator", function () {
 
     await crowToken.transfer(buyer.address, 1000000);
     await crowToken.transfer(seller.address, 10000);
-    //@ts-ignore
     payCommon = {
-      buyer: buyer.address,
       seller: seller.address,
       marketplace: ZERO_ADDRESS,
       currency: crowToken.address,
@@ -72,16 +66,6 @@ describe("UnicrowArbitrator", function () {
       amount: escrowValue,
     };
 
-    payEther = {
-      buyer: buyer.address,
-      seller: seller.address,
-      marketplace: ZERO_ADDRESS,
-      currency: ZERO_ADDRESS,
-      marketplaceFee: 0,
-      challengePeriod: 300,
-      challengeExtension: 0,
-      amount: escrowValueEth,
-    };
   });
   
   context("When deposit with arbitrator happens", function () {
@@ -93,7 +77,6 @@ describe("UnicrowArbitrator", function () {
       await expect(
         unicrowContract.connect(buyer).pay(
           {
-            //@ts-ignore
             ...payCommon,
           },
           bob.address,
@@ -115,7 +98,6 @@ describe("UnicrowArbitrator", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         bob.address,
@@ -135,7 +117,6 @@ describe("UnicrowArbitrator", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -163,7 +144,6 @@ describe("UnicrowArbitrator", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -187,7 +167,6 @@ describe("UnicrowArbitrator", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -211,7 +190,6 @@ describe("UnicrowArbitrator", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -246,7 +224,6 @@ describe("UnicrowArbitrator", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -274,7 +251,6 @@ describe("UnicrowArbitrator", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -290,9 +266,7 @@ describe("UnicrowArbitrator", function () {
       await unicrowArbitratorContract
         .connect(buyer)
         .approveArbitrator(escrowId, bob.address, 200);
-
-      //@ts-ignore
-      const newSplit = [5000, 5000] as BigNumberish;
+      const newSplit = [5000, 5000] as [number, number];
 
       await expect(
         unicrowArbitratorContract.connect(buyer).arbitrate(escrowId, newSplit)
@@ -306,7 +280,6 @@ describe("UnicrowArbitrator", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -322,9 +295,7 @@ describe("UnicrowArbitrator", function () {
       await unicrowArbitratorContract
         .connect(buyer)
         .approveArbitrator(escrowId, bob.address, 200);
-
-      //@ts-ignore
-      const newSplit = [5000, 5000] as BigNumberish;
+      const newSplit = [5000, 5000] as [number, number];
 
       await unicrowArbitratorContract.connect(bob).arbitrate(escrowId, newSplit);
 
@@ -338,7 +309,6 @@ describe("UnicrowArbitrator", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         bob.address,
@@ -355,7 +325,6 @@ describe("UnicrowArbitrator", function () {
 
       expect(
         await unicrowArbitratorContract.arbitrationCalculation(
-          //@ts-ignore
           [b, s, m, c, 100]
         )
       ).to.deep.equal(expectedResult);
@@ -366,7 +335,6 @@ describe("UnicrowArbitrator", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         bob.address,
@@ -377,13 +345,12 @@ describe("UnicrowArbitrator", function () {
 
       const { split } = await unicrowContract.getEscrow(escrowId);
 
-      const [b, s, m, c ] = split;
+      const [ , , , c ] = split;
 
       const expectedResult = [4950, 4950, 0, 0];
 
       expect(
         await unicrowArbitratorContract.arbitrationCalculation(
-          //@ts-ignore
           [5000, 5000, 0, c, 100]
         )
       ).to.deep.equal(expectedResult);
@@ -396,7 +363,6 @@ describe("UnicrowArbitrator", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         bob.address,

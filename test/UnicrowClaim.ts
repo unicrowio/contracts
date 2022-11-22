@@ -3,11 +3,11 @@ import chai, { expect } from "chai";
 import { ethers, network } from "hardhat";
 import { solidity } from "ethereum-waffle";
 
-import { Unicrow } from "../types/Unicrow";
-import { UnicrowClaim } from "../types/UnicrowClaim";
-import { UnicrowDispute } from "../types/UnicrowDispute";
-import { UnicrowArbitrator } from "../types/UnicrowArbitrator";
-import { FakeToken } from "../types/FakeToken";
+import { EscrowInputStruct, Unicrow } from "../types/contracts/Unicrow";
+import { UnicrowClaim } from "../types/contracts/UnicrowClaim";
+import { UnicrowDispute } from "../types/contracts/UnicrowDispute";
+import { UnicrowArbitrator } from "../types/contracts/UnicrowArbitrator";
+import { FakeToken } from "../types/contracts/FakeToken";
 
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
@@ -23,15 +23,14 @@ describe("UnicrowClaim", function () {
   let unicrowArbitratorContract: UnicrowArbitrator;
   let crowToken: FakeToken;
 
-  let owner: SignerWithAddress;
   let buyer: SignerWithAddress;
   let bob: SignerWithAddress;
   let seller: SignerWithAddress;
   let marketplace: SignerWithAddress;
   let treasury: SignerWithAddress;
 
-  let payCommon: any;
-  let payEther: any;
+  let payCommon: EscrowInputStruct;
+  let payEther: EscrowInputStruct;
 
   const { AddressZero: ZERO_ADDRESS } = ethers.constants;
 
@@ -44,7 +43,7 @@ describe("UnicrowClaim", function () {
 
   beforeEach(async () => {
     // Get the list of accounts
-    [owner, buyer, seller, bob, marketplace, treasury] = await ethers.getSigners();
+    [ , buyer, seller, bob, marketplace, treasury] = await ethers.getSigners();
     
     const {
       unicrow,
@@ -68,10 +67,7 @@ describe("UnicrowClaim", function () {
       seller.address,
       ethers.utils.parseUnits("100", 18)
     );
-    
-    //@ts-ignore
     payCommon = {
-      buyer: buyer.address,
       seller: seller.address,
       marketplace: ZERO_ADDRESS,
       currency: crowToken.address,
@@ -82,7 +78,6 @@ describe("UnicrowClaim", function () {
     };
 
     payEther = {
-      buyer: buyer.address,
       seller: seller.address,
       marketplace: ZERO_ADDRESS,
       currency: ZERO_ADDRESS,
@@ -99,7 +94,6 @@ describe("UnicrowClaim", function () {
       await crowToken.connect(buyer).approve(unicrowContract.address, escrowValue);
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -126,7 +120,6 @@ describe("UnicrowClaim", function () {
       await crowToken.connect(buyer).approve(unicrowContract.address, escrowValue);
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
           marketplace: bob.address,
           marketplaceFee: 1000,
@@ -142,6 +135,7 @@ describe("UnicrowClaim", function () {
         .approveSettlement(escrowId, [5000, 5000]);
       const txn = await tx.wait();
 
+
       const event = txn?.events?.find((e) => e.event == "ApproveOffer");
 
       expect(
@@ -153,7 +147,6 @@ describe("UnicrowClaim", function () {
       await crowToken.connect(buyer).approve(unicrowContract.address, escrowValue);
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         bob.address,
@@ -180,7 +173,6 @@ describe("UnicrowClaim", function () {
       await crowToken.connect(buyer).approve(unicrowContract.address, escrowValue);
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -204,7 +196,6 @@ describe("UnicrowClaim", function () {
       await crowToken.connect(buyer).approve(unicrowContract.address, escrowValue);
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -225,7 +216,6 @@ describe("UnicrowClaim", function () {
       await crowToken.connect(buyer).approve(unicrowContract.address, escrowValue);
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         bob.address,
@@ -250,7 +240,6 @@ describe("UnicrowClaim", function () {
       await crowToken.connect(buyer).approve(unicrowContract.address, escrowValue);
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         bob.address,
@@ -284,7 +273,6 @@ describe("UnicrowClaim", function () {
       await crowToken.connect(buyer).approve(unicrowContract.address, escrowValue);
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         bob.address,
@@ -314,7 +302,6 @@ describe("UnicrowClaim", function () {
       await crowToken.connect(buyer).approve(unicrowContract.address, escrowValue);
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -334,7 +321,6 @@ describe("UnicrowClaim", function () {
       await crowToken.connect(buyer).approve(unicrowContract.address, escrowValue);
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -357,7 +343,6 @@ describe("UnicrowClaim", function () {
       await crowToken.connect(buyer).approve(unicrowContract.address, escrowValue);
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -378,7 +363,6 @@ describe("UnicrowClaim", function () {
       await crowToken.connect(buyer).approve(unicrowContract.address, escrowValue);
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
           marketplaceFee: 200,
           marketplace: marketplace.address,
@@ -402,7 +386,6 @@ describe("UnicrowClaim", function () {
     it("should be able to claim ETH", async function () {
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payEther,
         },
         ZERO_ADDRESS,
@@ -422,7 +405,6 @@ describe("UnicrowClaim", function () {
       await crowToken.connect(buyer).approve(unicrowContract.address, escrowValue);
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,
@@ -431,7 +413,6 @@ describe("UnicrowClaim", function () {
 
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payEther,
         },
         ZERO_ADDRESS,
@@ -455,7 +436,6 @@ describe("UnicrowClaim", function () {
       await crowToken.connect(buyer).approve(unicrowContract.address, escrowValue);
       await unicrowContract.connect(buyer).pay(
         {
-          //@ts-ignore
           ...payCommon,
         },
         ZERO_ADDRESS,

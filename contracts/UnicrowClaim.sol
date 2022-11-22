@@ -263,7 +263,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
         payments[WHO_BUYER] = uint256(split[WHO_BUYER]) * amount / _100_PCT_IN_BIPS;
         payments[WHO_SELLER] = uint256(split[WHO_SELLER]) * amount / _100_PCT_IN_BIPS;
         payments[WHO_MARKETPLACE] = uint256(split[WHO_MARKETPLACE]) * amount / _100_PCT_IN_BIPS;
-        payments[WHO_PROTOCOL] = uint256(split[WHO_UNICROW]) * amount / _100_PCT_IN_BIPS;
+        payments[WHO_PROTOCOL] = uint256(split[WHO_PROTOCOL]) * amount / _100_PCT_IN_BIPS;
 
         if(!arbitrated) {
             // If the payment wasn't arbitrated, the arbitrator fee is calculated from seller's share

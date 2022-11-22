@@ -121,7 +121,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         // The address that sent the payment is set as a buyer
         address buyer = _msgSender();
 
-        // Fee's cant exceed 100% of the payment value
+        // Make sure there's something left for the seller :-)
         require(arbitratorFee + input.marketplaceFee + protocolFee < 10000, "1-026");
 
         // Payment can't use address(0)

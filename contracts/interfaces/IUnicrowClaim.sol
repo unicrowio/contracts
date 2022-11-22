@@ -21,6 +21,6 @@ interface IUnicrowClaim {
     function updateStakingRewards(address crowRewards_) external;
 
     // @notice Update protocol fee collection address (governable)
-    // @param unicrowFeeAddress_ New protocol fee collection address
-    function updateUnicrowFeeAddress(address unicrowFeeAddress_) external;
+    // @param protocolFeeAddress_ New protocol fee collection address
+    function updateProtocolFeeAddress(address protocolFeeAddress_) external;
 }

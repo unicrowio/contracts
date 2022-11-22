@@ -58,6 +58,11 @@ const _abi = [
             type: "address",
           },
           {
+            internalType: "uint64",
+            name: "challengeExtension",
+            type: "uint64",
+          },
+          {
             internalType: "address",
             name: "seller",
             type: "address",
@@ -65,16 +70,6 @@ const _abi = [
           {
             internalType: "uint64",
             name: "challengePeriodStart",
-            type: "uint64",
-          },
-          {
-            internalType: "uint64",
-            name: "challengePeriodEnd",
-            type: "uint64",
-          },
-          {
-            internalType: "uint64",
-            name: "challengeExtension",
             type: "uint64",
           },
           {
@@ -86,6 +81,11 @@ const _abi = [
             internalType: "uint256",
             name: "marketplaceFee",
             type: "uint256",
+          },
+          {
+            internalType: "uint64",
+            name: "challengePeriodEnd",
+            type: "uint64",
           },
           {
             internalType: "address",

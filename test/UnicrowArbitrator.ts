@@ -352,7 +352,7 @@ describe("UnicrowArbitrator", function () {
 
       const [b, s, m, c ] = split;
 
-      const escrowFee = await unicrowContract.escrowFee();
+      const escrowFee = await unicrowContract.protocolFee();
 
       const expectedResult = [0, 10000 - 100 - escrowFee, 0, escrowFee];
 

@@ -56,11 +56,11 @@ const _abi = [
     inputs: [
       {
         internalType: "address",
-        name: "crowRewards_",
+        name: "protocolFeeAddress_",
         type: "address",
       },
     ],
-    name: "updateStakingRewards",
+    name: "updateProtocolFeeAddress",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -69,11 +69,11 @@ const _abi = [
     inputs: [
       {
         internalType: "address",
-        name: "unicrowFeeAddress_",
+        name: "crowRewards_",
         type: "address",
       },
     ],
-    name: "updateUnicrowFeeAddress",
+    name: "updateStakingRewards",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

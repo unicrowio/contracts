@@ -19,12 +19,12 @@ import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 
 export type EscrowStruct = {
   buyer: string;
+  challengeExtension: BigNumberish;
   seller: string;
   challengePeriodStart: BigNumberish;
-  challengePeriodEnd: BigNumberish;
-  challengeExtension: BigNumberish;
   marketplace: string;
   marketplaceFee: BigNumberish;
+  challengePeriodEnd: BigNumberish;
   currency: string;
   claimed: BigNumberish;
   consensus: [BigNumberish, BigNumberish];
@@ -34,11 +34,11 @@ export type EscrowStruct = {
 
 export type EscrowStructOutput = [
   string,
-  string,
-  BigNumber,
-  BigNumber,
   BigNumber,
   string,
+  BigNumber,
+  string,
+  BigNumber,
   BigNumber,
   string,
   number,
@@ -47,12 +47,12 @@ export type EscrowStructOutput = [
   BigNumber
 ] & {
   buyer: string;
+  challengeExtension: BigNumber;
   seller: string;
   challengePeriodStart: BigNumber;
-  challengePeriodEnd: BigNumber;
-  challengeExtension: BigNumber;
   marketplace: string;
   marketplaceFee: BigNumber;
+  challengePeriodEnd: BigNumber;
   currency: string;
   claimed: number;
   consensus: [number, number];

@@ -87,8 +87,8 @@ interface IUnicrow {
   function setClaimed(uint escrowId) external;
 
   /**
-   * @notice Update escrow fee (governance only, cannot be more than 1%)
-   * @param fee New escrow fee (bips)
+   * @notice Update protocol fee (governance only, cannot be more than 1%)
+   * @param fee New protocol fee (bips)
    */
   function updateEscrowFee(uint16 fee) external;
 

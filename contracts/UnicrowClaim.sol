@@ -28,7 +28,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
     IUnicrowStakingRewards public stakingRewards;
 
     /// Destination address of the protocol fee (governed)
-    address public unicrowFeeAddress;
+    address public protocolFeeAddress;
     
     struct ClaimEvent {
         uint escrowId;
@@ -46,17 +46,16 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
     /**
      * @param unicrow_ main escrow contract
      * @param unicrowArbitrator_ arbitration contract
-     * @param unicrowFeeAddress_ address to collect escrow fee
+     * @param protocolFeeAddress_ address to collect protocol fee
      */
     constructor(
         address unicrow_,
         address unicrowArbitrator_,
-        address unicrowFeeAddress_
+        address protocolFeeAddress_
     ) {
         unicrow = Unicrow(payable(unicrow_));
         unicrowArbitrator = UnicrowArbitrator(unicrowArbitrator_);
-
-        unicrowFeeAddress = unicrowFeeAddress_;
+        protocolFeeAddress = protocolFeeAddress_;
     }
 
     modifier onlyGovernance() {
@@ -75,8 +74,8 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
     }
 
     /// @inheritdoc IUnicrowClaim
-    function updateUnicrowFeeAddress(address unicrowFeeAddress_) external override onlyGovernance {
-        unicrowFeeAddress = unicrowFeeAddress_;
+    function updateProtocolFeeAddress(address protocolFeeAddress_) external override onlyGovernance {
+        protocolFeeAddress = protocolFeeAddress_;
     }
 
     /// @inheritdoc IUnicrowClaim
@@ -117,18 +116,18 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
                 escrow.buyer,
                 escrow.seller,
                 escrow.marketplace,
-                address(unicrowFeeAddress),
+                address(protocolFeeAddress),
                 arbitratorData.arbitrator
             ];
 
             claimPayments(escrows[i], payments, addresses, escrow.currency);
 
             if(address(crowRewards) != address(0)){
-                crowRewards.distribute(escrow.buyer, escrow.seller, payments[WHO_UNICROW]);
+                crowRewards.distribute(escrow.buyer, escrow.seller, payments[WHO_PROTOCOL]);
             }
 
             if(address(stakingRewards) != address(0)){
-                stakingRewards.collectFee(escrow.currency, payments[WHO_UNICROW]);
+                stakingRewards.collectFee(escrow.currency, payments[WHO_PROTOCOL]);
             }
 
             events[i] = ClaimEvent(escrows[i], payments);
@@ -176,7 +175,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
             escrow.buyer,
             escrow.seller,
             escrow.marketplace,
-            address(unicrowFeeAddress),
+            address(protocolFeeAddress),
             arbitratorData.arbitrator
         ];
 
@@ -184,11 +183,11 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
         claimPayments(escrowId, payments, addresses, escrow.currency);
 
         if(address(crowRewards) != address(0)){
-            crowRewards.distribute(escrow.buyer, escrow.seller, payments[WHO_UNICROW]);
+            crowRewards.distribute(escrow.buyer, escrow.seller, payments[WHO_PROTOCOL]);
         }
 
         if(address(stakingRewards) != address(0)){
-            stakingRewards.collectFee(escrow.currency, payments[WHO_UNICROW]);
+            stakingRewards.collectFee(escrow.currency, payments[WHO_PROTOCOL]);
         }
 
         // Emit the event incl. final amounts
@@ -199,7 +198,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
             payments[WHO_BUYER],
             payments[WHO_SELLER],
             payments[WHO_MARKETPLACE],
-            payments[WHO_UNICROW],
+            payments[WHO_PROTOCOL],
             payments[WHO_ARBITRATOR]
         ];
     }
@@ -224,7 +223,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
                     escrow.split[WHO_BUYER],
                     escrow.split[WHO_SELLER],
                     escrow.split[WHO_MARKETPLACE],
-                    escrow.split[WHO_UNICROW],
+                    escrow.split[WHO_PROTOCOL],
                     arbitratorFee
                 ]
             );
@@ -234,7 +233,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
                     escrow.split[WHO_BUYER],
                     escrow.split[WHO_SELLER],
                     escrow.split[WHO_MARKETPLACE],
-                    escrow.split[WHO_UNICROW],
+                    escrow.split[WHO_PROTOCOL],
                     arbitratorFee
                 ]
             );
@@ -264,7 +263,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
         payments[WHO_BUYER] = uint256(split[WHO_BUYER]) * amount / _100_PCT_IN_BIPS;
         payments[WHO_SELLER] = uint256(split[WHO_SELLER]) * amount / _100_PCT_IN_BIPS;
         payments[WHO_MARKETPLACE] = uint256(split[WHO_MARKETPLACE]) * amount / _100_PCT_IN_BIPS;
-        payments[WHO_UNICROW] = uint256(split[WHO_UNICROW]) * amount / _100_PCT_IN_BIPS;
+        payments[WHO_PROTOCOL] = uint256(split[WHO_UNICROW]) * amount / _100_PCT_IN_BIPS;
 
         if(!arbitrated) {
             // If the payment wasn't arbitrated, the arbitrator fee is calculated from seller's share

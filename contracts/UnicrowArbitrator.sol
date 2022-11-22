@@ -95,19 +95,12 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
         address arbitrator,
         uint16 arbitratorFee
     ) external override onlyUnicrow {
-        require(arbitrator != address(0));
-
-        // Make sure the arbitrator is neither seller nor buyer in the escrow
-        require(
-            arbitrator != unicrow.getEscrow(escrowId).seller &&
-            arbitrator != unicrow.getEscrow(escrowId).buyer
-        );
-
         // Store arbitrator address and fee
         escrowArbitrator[escrowId].arbitrator = arbitrator;
         escrowArbitrator[escrowId].arbitratorFee = arbitratorFee;
+
         // In this case, the arbitrator was set during the payment,
-        //   so it is considered to be based on the mutual consensus consensus
+        // so it is considered to be based on the mutual consensus consensus
         escrowArbitrator[escrowId].buyerConsensus = true;
         escrowArbitrator[escrowId].sellerConsensus = true;
     }
@@ -251,9 +244,9 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
         );
 
         // protocol fee
-        if (currentSplit[WHO_UNICROW] > 0) {
-            split[WHO_UNICROW] = uint16(
-                uint256(currentSplit[WHO_UNICROW])
+        if (currentSplit[WHO_PROTOCOL] > 0) {
+            split[WHO_PROTOCOL] = uint16(
+                uint256(currentSplit[WHO_PROTOCOL])
                     * currentSplit[WHO_SELLER]
                     / _100_PCT_IN_BIPS
             );
@@ -280,7 +273,7 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
         if(currentSplit[WHO_SELLER] > 0) {
             split[WHO_SELLER] = uint16(
                 uint256(currentSplit[WHO_SELLER])
-                    - split[WHO_UNICROW]
+                    - split[WHO_PROTOCOL]
                     - split[WHO_MARKETPLACE]
                     - calculatedSellerArbitratorFee
                 );

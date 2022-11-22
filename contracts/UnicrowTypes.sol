@@ -9,7 +9,7 @@ uint16 constant _100_PCT_IN_BIPS = 10000;
 uint8 constant WHO_BUYER = 0;
 uint8 constant WHO_SELLER = 1;
 uint8 constant WHO_MARKETPLACE = 2;
-uint8 constant WHO_UNICROW = 3;
+uint8 constant WHO_PROTOCOL = 3;
 uint8 constant WHO_ARBITRATOR = 4;
 
 /// @dev This is how information about each escrow is stored int he main contract, mapped to escrowId
@@ -17,23 +17,23 @@ struct Escrow {
     /// @dev Who sent the payment
     address buyer;
 
+    /// @dev By how much will the challenge period get extended after a challenge (in seconds)
+    uint64 challengeExtension;
+
     /// @dev Whom is the payment for
     address seller;
 
     /// @dev When does/has the current challenge period start(ed) (seconds in Unix epoch)
     uint64 challengePeriodStart;
 
-    /// @dev When does the current challenge period end (seconds in Unix epoch)
-    uint64 challengePeriodEnd;
-
-    /// @dev By how much will the challenge period get extended after a challenge (in seconds)
-    uint64 challengeExtension;
-
     /// @dev Address of a marketplace that has facilitated the trade (0x000...00 if none)
     address marketplace;
 
     /// @dev Fee for the marketplace (can be 0 even if a marketplace was set but doesn't charge fee)
     uint256 marketplaceFee;
+
+    /// @dev When does the current challenge period end (seconds in Unix epoch)
+    uint64 challengePeriodEnd;
 
     /// @dev Token used in the payment (0x00..00 for ETH)
     address currency;

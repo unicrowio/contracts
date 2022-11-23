@@ -112,9 +112,16 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
         uint16 arbitratorFee
     ) external override onlyEscrowMember(escrowId, _msgSender()) {
         Arbitrator storage arbitratorData = escrowArbitrator[escrowId];
+        Escrow memory escrow = unicrow.getEscrow(escrowId);
+
+        // Arbitrator can't be address 0
+        require(arbitrator != address(0), "2-009");
 
         // Check that arbitrator hasnt't been set already
         require(!arbitratorData.buyerConsensus || !arbitratorData.sellerConsensus,"2-006" );
+
+        // Make sure there's something left for the seller :-)
+        require(escrow.marketplaceFee + escrow.split[WHO_PROTOCOL] + arbitratorFee < 10000, "2-007");
 
         // Save the proposal parameters
         arbitratorData.arbitrator = arbitrator;
@@ -145,13 +152,15 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
     {
         Arbitrator memory arbitratorData = getArbitratorData(escrowId);
 
+        // Check that the arbitrator has been proposed
+        require(arbitratorData.arbitrator != address(0), "2-008");
+
         // Compare the approval to the original proposal
         require(validationAddress == arbitratorData.arbitrator, "2-008");
         require(validation == arbitratorData.arbitratorFee, "2-007");
 
         // Check that the buyer is approving seller's proposal (or vice versa) and if yes, confirm the consensus
         if (_isEscrowBuyer(escrowId, _msgSender())) {
-
             require(
                 arbitratorData.buyerConsensus == false,
                 "2-003"
@@ -236,14 +245,14 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
                     / _100_PCT_IN_BIPS
         );
 
-        // seller's portion of the arbitrator fee
+        // Seller's portion of the arbitrator fee
         calculatedSellerArbitratorFee = uint16(
             uint256(currentSplit[WHO_ARBITRATOR])
                 * currentSplit[WHO_SELLER]
                 / _100_PCT_IN_BIPS
         );
 
-        // protocol fee
+        // Protocol fee
         if (currentSplit[WHO_PROTOCOL] > 0) {
             split[WHO_PROTOCOL] = uint16(
                 uint256(currentSplit[WHO_PROTOCOL])
@@ -252,7 +261,7 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
             );
         }
 
-        // marketplace fee
+        // Marketplace fee
         if (currentSplit[WHO_MARKETPLACE] > 0) {
             split[WHO_MARKETPLACE] = uint16(
                 uint256(currentSplit[WHO_MARKETPLACE])

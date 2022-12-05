@@ -180,14 +180,16 @@ contract UnicrowDispute is IUnicrowDispute, Context, ReentrancyGuard {
 
         Escrow memory escrow = unicrow.getEscrow(escrowId);
 
+        address latestSettlementOfferByAddress = latestSettlementOfferBy[escrowId];
+
         // Only buyer or seller can approve a settlement
         require(sender == escrow.buyer || sender == escrow.seller, "1-009");
 
         // Check that there's a prior settlement offer
-        require(latestSettlementOfferBy[escrowId] != address(0), "1-017");
+        require(latestSettlementOfferByAddress != address(0), "1-017");
 
         // Only buyer can approve Seller's offer and vice versa
-        require(sender != latestSettlementOfferBy[escrowId], "1-020");
+        require(sender != latestSettlementOfferByAddress, "1-020");
 
         uint16[2] memory latestOffer = latestSettlementOffer[escrowId];
 

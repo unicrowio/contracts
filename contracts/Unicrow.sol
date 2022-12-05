@@ -219,6 +219,10 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         escrows[escrowId].split = escrow.split;
         escrows[escrowId].consensus = escrow.consensus;
 
+        // Update the escrow as claimed in the storage and in the emitted event
+        escrows[escrowId].claimed = 1;
+        escrow.claimed = 1;
+
         // Withdraw the amount to the buyer
         if (address(escrow.currency) == address(0)) {
             (bool success, ) = escrow.buyer.call{value: escrow.amount}("");
@@ -231,9 +235,6 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
             );
         }
 
-        // Update the escrow as claimed in the storage and in the emitted event
-        escrows[escrowId].claimed = 1;
-        escrow.claimed = 1;
 
         emit Refund(escrowId, escrow, block.timestamp);
     }
@@ -394,7 +395,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
     }
 
     /// @inheritdoc IUnicrow
-    function setClaimed(uint256 escrowId) external override onlyUnicrowClaim {
+    function setClaimed(uint256 escrowId) external override onlyUnicrowClaim nonReentrant {
         escrows[escrowId].claimed = 1;
     }
 }

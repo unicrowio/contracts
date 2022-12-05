@@ -294,7 +294,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
     ) internal {
         unicrow.setClaimed(escrowId);
 
-        for (uint256 i = 0; i < amounts.length; i++) {
+        for (uint256 i = 0; i < 5; i++) {
             if (amounts[i] > 0) {
                 unicrow.sendEscrowShare(addresses[i], amounts[i], currency);
             }

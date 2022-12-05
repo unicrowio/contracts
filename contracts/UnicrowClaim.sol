@@ -79,7 +79,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
     }
 
     /// @inheritdoc IUnicrowClaim
-    function claim(uint[] calldata escrows) external override payable nonReentrant {
+    function claim(uint[] calldata escrows) external override nonReentrant {
 
         ClaimEvent[] memory events = new ClaimEvent[](escrows.length);
 
@@ -137,7 +137,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
     }
 
     /// @inheritdoc IUnicrowClaim
-    function singleClaim(uint escrowId) external override payable nonReentrant returns(uint256[5] memory) {
+    function singleClaim(uint escrowId) external override nonReentrant returns(uint256[5] memory) {
         Escrow memory escrow = unicrow.getEscrow(escrowId);
 
         Arbitrator memory arbitratorData = unicrowArbitrator

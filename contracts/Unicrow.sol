@@ -107,8 +107,6 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         _;
     }
 
-    receive() external payable {}
-
     /// @inheritdoc IUnicrow
     function pay(
         EscrowInput calldata input,

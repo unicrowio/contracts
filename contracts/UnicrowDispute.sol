@@ -86,7 +86,7 @@ contract UnicrowDispute is IUnicrowDispute, Context, ReentrancyGuard {
         );
 
         // Check that the challenge period is running
-        require(block.timestamp < escrow.challengePeriodEnd, "1-016");
+        require(block.timestamp <= escrow.challengePeriodEnd, "1-016");
         require(block.timestamp > escrow.challengePeriodStart, "1-019");
 
         // Prevent reduntant challenge from seller's side

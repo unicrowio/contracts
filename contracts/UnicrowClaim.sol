@@ -83,7 +83,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
 
         ClaimEvent[] memory events = new ClaimEvent[](escrows.length);
 
-        for (uint256 i = 0; i < escrows.length; i++) {
+        for (uint256 i = 0; i < escrows.length; ++i) {
             Escrow memory escrow = unicrow.getEscrow(escrows[i]);
 
             Arbitrator memory arbitratorData = unicrowArbitrator
@@ -294,7 +294,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
     ) internal {
         unicrow.setClaimed(escrowId);
 
-        for (uint256 i = 0; i < 5; i++) {
+        for (uint256 i = 0; i < 5; ++i) {
             if (amounts[i] > 0) {
                 unicrow.sendEscrowShare(addresses[i], amounts[i], currency);
             }

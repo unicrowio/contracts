@@ -225,7 +225,7 @@ contract UnicrowDispute is IUnicrowDispute, Context, ReentrancyGuard {
      * @param escrowId Id of the escrow to get settlement offer details for
      * @return Returns zero values in the returned object's fields if there's been no offer
      */
-    function getSettlementDetails(uint256 escrowId) public view returns (Settlement memory) {
+    function getSettlementDetails(uint256 escrowId) external view returns (Settlement memory) {
        Settlement memory settlement = Settlement(latestSettlementOfferBy[escrowId], latestSettlementOffer[escrowId]);
        return settlement;
     }

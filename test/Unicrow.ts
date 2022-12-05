@@ -231,6 +231,23 @@ describe("Unicrow", function () {
         )
       ).to.be.revertedWith("0-010")
     });
+
+    it("should not be able to payment amount be equal 0", async function () {
+      await expect(
+        unicrowContract.connect(buyer).pay(
+          {
+            //@ts-ignore
+            ...payCommon,
+            amount: 0
+          },
+          ZERO_ADDRESS,
+          0,
+          {
+            value: escrowValueEth,
+          }
+        )
+      ).to.be.revertedWith("0-011")
+    });
   });
 
   context("When refund happens", function () {

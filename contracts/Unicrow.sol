@@ -139,6 +139,11 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
             require(input.amount == msg.value);
         }
 
+        // Marketplace can't have fee greater than 0 without a address
+        if(input.marketplaceFee > 0) {
+            require(input.marketplace != address(0), "0-009");
+        }
+
         // Check if the arbitrator was defined
         if (arbitrator != address(0)) {
 

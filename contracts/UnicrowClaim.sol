@@ -256,6 +256,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
         // in such case, buyer's or seller split was reduced in the calling function)
         payments[WHO_ARBITRATOR] = (uint256(split[WHO_ARBITRATOR]) * amount) / _100_PCT_IN_BIPS;
 
+        // The rest of the amount goes to the protocol
         payments[WHO_PROTOCOL] = amount - payments[WHO_BUYER] - payments[WHO_SELLER] - payments[WHO_MARKETPLACE] - payments[WHO_ARBITRATOR];
 
         return payments;

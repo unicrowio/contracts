@@ -253,6 +253,7 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
                     / _100_PCT_IN_BIPS
             );
             
+            // Store how much the arbitrator will get from each party
             split[WHO_ARBITRATOR] = calculatedBuyerArbitratorFee + calculatedSellerArbitratorFee;
         }
 

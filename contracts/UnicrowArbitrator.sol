@@ -238,25 +238,27 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
         uint16 calculatedSellerArbitratorFee;
         uint16 calculatedBuyerArbitratorFee;
 
-        // Calculate buyer's portion of the arbitrator fee
-        calculatedBuyerArbitratorFee = uint16(
-            uint256(currentSplit[WHO_ARBITRATOR])
-                    * currentSplit[WHO_BUYER]
+        if(currentSplit[WHO_ARBITRATOR] > 0) {
+            // Calculate buyer's portion of the arbitrator fee
+            calculatedBuyerArbitratorFee = uint16(
+                (uint256(currentSplit[WHO_ARBITRATOR])
+                        * currentSplit[WHO_BUYER])
+                        / _100_PCT_IN_BIPS
+            );
+            
+             // Seller's portion of the arbitrator fee
+            calculatedSellerArbitratorFee = uint16(
+                (uint256(currentSplit[WHO_ARBITRATOR])
+                    * currentSplit[WHO_SELLER])
                     / _100_PCT_IN_BIPS
-        );
-
-        // Seller's portion of the arbitrator fee
-        calculatedSellerArbitratorFee = uint16(
-            uint256(currentSplit[WHO_ARBITRATOR])
-                * currentSplit[WHO_SELLER]
-                / _100_PCT_IN_BIPS
-        );
+            );
+        }
 
         // Protocol fee
         if (currentSplit[WHO_PROTOCOL] > 0) {
             split[WHO_PROTOCOL] = uint16(
-                uint256(currentSplit[WHO_PROTOCOL])
-                    * currentSplit[WHO_SELLER]
+                (uint256(currentSplit[WHO_PROTOCOL])
+                    * currentSplit[WHO_SELLER])
                     / _100_PCT_IN_BIPS
             );
         }
@@ -264,8 +266,8 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
         // Marketplace fee
         if (currentSplit[WHO_MARKETPLACE] > 0) {
             split[WHO_MARKETPLACE] = uint16(
-                uint256(currentSplit[WHO_MARKETPLACE])
-                    * currentSplit[WHO_SELLER]
+                (uint256(currentSplit[WHO_MARKETPLACE])
+                    * currentSplit[WHO_SELLER])
                     / _100_PCT_IN_BIPS
             );
         }

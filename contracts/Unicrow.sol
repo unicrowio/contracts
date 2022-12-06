@@ -363,9 +363,9 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
 
         // Discount the protocol fee based on seller's share
         if (currentSplit[WHO_PROTOCOL] > 0) {
-            split[WHO_PROTOCOL] = uint16(
+            (split[WHO_PROTOCOL] = uint16(
                 uint256(currentSplit[WHO_PROTOCOL]) *
-                    currentSplit[WHO_SELLER] /
+                    currentSplit[WHO_SELLER]) /
                     _100_PCT_IN_BIPS
             );
         }
@@ -373,16 +373,20 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         // Discount the marketplace fee based on the seller's share
         if (currentSplit[WHO_MARKETPLACE] > 0) {
             split[WHO_MARKETPLACE] = uint16(
-                uint256(currentSplit[WHO_MARKETPLACE]) *
-                    currentSplit[WHO_SELLER] /
+                (uint256(currentSplit[WHO_MARKETPLACE]) *
+                    currentSplit[WHO_SELLER]) /
                     _100_PCT_IN_BIPS
             );
         }
 
-        // Discount the arbitrator's fee based on the seller's share
-        calculatedArbitratorFee = uint16(
-            uint256(currentSplit[WHO_ARBITRATOR]) * currentSplit[WHO_SELLER] / _100_PCT_IN_BIPS
-        );
+        // Calculate the arbitrator fee based on the seller's share
+        if (currentSplit[WHO_ARBITRATOR] > 0) {
+            calculatedArbitratorFee = uint16(
+                (uint256(currentSplit[WHO_ARBITRATOR]) *
+                    currentSplit[WHO_SELLER]) /
+                    _100_PCT_IN_BIPS
+            );
+        }
 
         // Calculate seller's final share by substracting all the fees
         unchecked {

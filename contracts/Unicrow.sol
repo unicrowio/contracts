@@ -356,8 +356,8 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
     /// @inheritdoc IUnicrow
     function splitCalculation(
         uint16[5] calldata currentSplit
-    ) external pure override returns (uint16[4] memory) {
-        uint16[4] memory split;
+    ) external pure override returns (uint16[5] memory) {
+        uint16[5] memory split;
 
         uint16 calculatedArbitratorFee;
 
@@ -392,6 +392,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         unchecked {
             split[WHO_SELLER] = currentSplit[WHO_SELLER] - split[WHO_PROTOCOL] - split[WHO_MARKETPLACE] - calculatedArbitratorFee;
             split[WHO_BUYER] = currentSplit[WHO_BUYER];
+            split[WHO_ARBITRATOR] = calculatedArbitratorFee;
         }
 
         return split;

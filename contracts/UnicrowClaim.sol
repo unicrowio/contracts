@@ -99,7 +99,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
                 "0-006"
             );
 
-            uint16[4] memory calculatedSplits = calculateSplits(
+            uint16[5] memory calculatedSplits = calculateSplits(
                 arbitratorData.arbitratorFee,
                 arbitratorData.arbitrated,
                 escrow
@@ -107,8 +107,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
 
             uint256[5] memory payments = calculatePayments(
                 escrow.amount,
-                calculatedSplits,
-                arbitratorData.arbitratorFee
+                calculatedSplits
             );
 
             address[5] memory addresses = [
@@ -154,7 +153,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
         );
 
         // Calculate final splits (in bips) from gross splits
-        uint16[4] memory calculatedSplits = calculateSplits(
+        uint16[5] memory calculatedSplits = calculateSplits(
             arbitratorData.arbitratorFee,
             arbitratorData.arbitrated,
             escrow
@@ -163,8 +162,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
         // Calculate amounts to be sent in the token
         uint256[5] memory payments = calculatePayments(
             escrow.amount,
-            calculatedSplits,
-            arbitratorData.arbitratorFee
+            calculatedSplits
         );
 
         // Prepare list of addresses for the withdrawals
@@ -210,8 +208,8 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
         uint16 arbitratorFee,
         bool arbitrated,
         Escrow memory escrow
-    ) internal view returns(uint16[4] memory) {
-        uint16[4] memory split;
+    ) internal view returns(uint16[5] memory) {
+        uint16[5] memory split;
 
         // The calculation will differ slightly based on whether the payment was decided by an arbitrator or not
         if(arbitrated) {
@@ -246,9 +244,8 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
      */
     function calculatePayments(
         uint amount,
-        uint16[4] memory split,
-        uint16 arbitratorFee
-    ) internal returns(uint256[5] memory) {
+        uint16[5] memory split
+    ) internal pure returns(uint256[5] memory) {
         uint256[5] memory payments;
 
         // Multiply all the splits by the total amount
@@ -258,21 +255,9 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
     
         // If the arbitrator decided the payment, they get their full fee
         // in such case, buyer's or seller split was reduced in the calling function)
-        payments[WHO_ARBITRATOR] = (uint256(arbitratorFee) * amount) / _100_PCT_IN_BIPS;
+        payments[WHO_ARBITRATOR] = (uint256(split[WHO_ARBITRATOR]) * amount) / _100_PCT_IN_BIPS;
 
-        unchecked {
-            payments[WHO_PROTOCOL] = amount - payments[WHO_BUYER] - payments[WHO_SELLER] - payments[WHO_MARKETPLACE] - payments[WHO_ARBITRATOR];
-        }
-
-        // console all the payments
-        console.log("amount", amount);
-        console.log("payments[WHO_BUYER]", payments[WHO_BUYER]);
-        console.log("payments[WHO_SELLER]", payments[WHO_SELLER]);
-        console.log("payments[WHO_MARKETPLACE]", payments[WHO_MARKETPLACE]);
-        console.log("payments[WHO_ARBITRATOR]", payments[WHO_ARBITRATOR]);
-        console.log("payments[WHO_ARBITRATOR]", payments[WHO_ARBITRATOR]);
-
-        console.log("PAYMENTS[WHO_PROTOCOL]", payments[WHO_PROTOCOL]);
+        payments[WHO_PROTOCOL] = amount - payments[WHO_BUYER] - payments[WHO_SELLER] - payments[WHO_MARKETPLACE] - payments[WHO_ARBITRATOR];
 
         return payments;
     }

@@ -232,8 +232,8 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
      */
     function arbitrationCalculation(
         uint16[5] calldata currentSplit
-    ) public pure returns (uint16[4] memory) {
-        uint16[4] memory split;
+    ) public pure returns (uint16[5] memory) {
+        uint16[5] memory split;
 
         uint16 calculatedSellerArbitratorFee;
         uint16 calculatedBuyerArbitratorFee;
@@ -252,6 +252,8 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
                     * currentSplit[WHO_SELLER])
                     / _100_PCT_IN_BIPS
             );
+            
+            split[WHO_ARBITRATOR] = calculatedBuyerArbitratorFee + calculatedSellerArbitratorFee;
         }
 
         // Protocol fee

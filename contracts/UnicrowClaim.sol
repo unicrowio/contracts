@@ -12,7 +12,6 @@ import "./interfaces/IUnicrowClaimRewards.sol";
 import "./UnicrowArbitrator.sol";
 import "./Unicrow.sol";
 import "./UnicrowTypes.sol";
-import "hardhat/console.sol";
 
 /**
  * @title Contract for managing claims from Unicrow's escrow

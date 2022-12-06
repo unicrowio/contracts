@@ -363,7 +363,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
 
         // Discount the protocol fee based on seller's share
         if (currentSplit[WHO_PROTOCOL] > 0) {
-            (split[WHO_PROTOCOL] = uint16(
+            split[WHO_PROTOCOL] = uint16((
                 uint256(currentSplit[WHO_PROTOCOL]) *
                     currentSplit[WHO_SELLER]) /
                     _100_PCT_IN_BIPS

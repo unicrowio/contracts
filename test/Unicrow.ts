@@ -131,7 +131,9 @@ describe("Unicrow", function () {
             ...payEther,
           },
           ZERO_ADDRESS,
-          0
+          0, {
+            value: escrowValueEth
+          }
         )
       ).to.emit(unicrowContract, "Pay");
 

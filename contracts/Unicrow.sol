@@ -250,7 +250,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
     }
 
     /// @inheritdoc IUnicrow
-    function release(uint256 escrowId) external override nonReentrant {
+    function release(uint256 escrowId) external override {
         address sender = _msgSender();
         Escrow memory escrow = escrows[escrowId];
 

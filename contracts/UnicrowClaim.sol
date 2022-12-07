@@ -207,6 +207,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
         uint16[5] memory split;
 
         bool arbitratorConsensus = arbitrator.buyerConsensus && arbitrator.sellerConsensus;
+        uint16 arbitratorFee = arbitratorConsensus ? arbitrator.arbitratorFee : 0;
 
         // The calculation will differ slightly based on whether the payment was decided by an arbitrator or not
         if(arbitrator.arbitrated) {
@@ -216,7 +217,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
                     escrow.split[WHO_SELLER],
                     escrow.split[WHO_MARKETPLACE],
                     escrow.split[WHO_PROTOCOL],
-                    arbitratorConsensus ? arbitrator.arbitratorFee : 0
+                    arbitratorFee
                 ]
             );
         } else {
@@ -226,7 +227,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
                     escrow.split[WHO_SELLER],
                     escrow.split[WHO_MARKETPLACE],
                     escrow.split[WHO_PROTOCOL],
-                    arbitratorConsensus ? arbitrator.arbitratorFee : 0
+                    arbitratorFee
                 ]
             );
         }

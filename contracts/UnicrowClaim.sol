@@ -99,8 +99,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
             );
 
             uint16[4] memory calculatedSplits = calculateSplits(
-                arbitratorData.arbitratorFee,
-                arbitratorData.arbitrated,
+                arbitratorData,
                 escrow
             );
 
@@ -156,8 +155,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
 
         // Calculate final splits (in bips) from gross splits
         uint16[4] memory calculatedSplits = calculateSplits(
-            arbitratorData.arbitratorFee,
-            arbitratorData.arbitrated,
+            arbitratorData,
             escrow
         );
 
@@ -205,26 +203,26 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
 
     /**
      * @dev Calculates how the balance in the escrow should be split between all the relevant parties
-     * @param arbitratorFee Arbitrator information is not part of core escrow data, so fee is provided separately here
-     * @param arbitrated Whether the escrow was decided by an arbitrator
+     * @param arbitrator Arbitrator information is not part of core escrow data, so data is provided separately here
      * @param escrow Escrow information
      */
     function calculateSplits(
-        uint16 arbitratorFee,
-        bool arbitrated,
+        Arbitrator memory arbitrator,
         Escrow memory escrow
     ) internal view returns(uint16[4] memory) {
         uint16[4] memory split;
 
+        bool arbitratorConsensus = arbitrator.buyerConsensus && arbitrator.sellerConsensus;
+
         // The calculation will differ slightly based on whether the payment was decided by an arbitrator or not
-        if(arbitrated) {
+        if(arbitrator.arbitrated) {
             split = unicrowArbitrator.arbitrationCalculation(
                 [
                     escrow.split[WHO_BUYER],
                     escrow.split[WHO_SELLER],
                     escrow.split[WHO_MARKETPLACE],
                     escrow.split[WHO_PROTOCOL],
-                    arbitratorFee
+                    arbitratorConsensus ? arbitrator.arbitratorFee : 0
                 ]
             );
         } else {
@@ -234,7 +232,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
                     escrow.split[WHO_SELLER],
                     escrow.split[WHO_MARKETPLACE],
                     escrow.split[WHO_PROTOCOL],
-                    arbitratorFee
+                    arbitratorConsensus ? arbitrator.arbitratorFee : 0
                 ]
             );
         }

@@ -374,6 +374,31 @@ describe("UnicrowClaim", function () {
       ).to.be.revertedWith("0-005");
     });
 
+    it("should not update arbitrator fee after challenge", async function () {
+      await crowToken.connect(buyer).approve(unicrowContract.address, escrowValue);
+      await unicrowContract.connect(buyer).pay(
+        {
+          //@ts-ignore
+          ...payCommon,
+        },
+        ZERO_ADDRESS,
+        0
+      );
+
+      await network.provider.send("evm_increaseTime", [300]);
+      await network.provider.send("evm_mine");
+
+      await unicrowArbitratorContract.connect(seller).proposeArbitrator(escrowId, bob.address, 1000);
+
+      await expect(() =>
+        unicrowClaimContract.connect(seller).claim([escrowId])
+      ).to.changeTokenBalance(
+        crowToken,
+        bob,
+        ethers.utils.parseUnits("1", 18)
+      );    
+    });
+
     it("should be able to claim marketplace fee", async function () {
       await crowToken.connect(buyer).approve(unicrowContract.address, escrowValue);
       await unicrowContract.connect(buyer).pay(

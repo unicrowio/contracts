@@ -119,6 +119,9 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         // The address that sent the payment is set as a buyer
         address buyer = _msgSender();
 
+        // Amount of the payment in ERC20 tokens
+        uint amount = input.amount;
+
         // Make sure there's something left for the seller :-)
         require(arbitratorFee + input.marketplaceFee + protocolFee < 10000, "1-026");
 
@@ -132,7 +135,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         require(buyer != input.seller, "0-003");
 
         // Payment amount must be greater than zero
-        require(input.amount > 0, "0-011");
+        require(amount > 0, "0-011");
 
         // Buyer can't send ETH if currency is not ETH
         if(msg.value > 0) {
@@ -142,14 +145,22 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         // If the payment was made in ERC20 and not ETH, execute the transfer
         if (input.currency == address(0)) {
             // Amount in the payment metadata must match what was sent
-            require(input.amount == msg.value);
+            require(amount == msg.value);
         } else {
+            uint balanceBefore = IERC20(input.currency).balanceOf(address(this));
+
+            // If the payment was made in ERC20 and not ETH, execute the transfer
             SafeERC20.safeTransferFrom(
                 IERC20(input.currency),
                 buyer,
                 address(this),
-                input.amount
+                amount
             );
+
+            uint balanceAfter = IERC20(input.currency).balanceOf(address(this));
+
+            // Making sure that the input amount is the amount received
+            amount = balanceAfter - balanceBefore;
         }
 
         // Marketplace can't have fee greater than 0 without a address
@@ -186,10 +197,8 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
             challengeExtension: uint64(input.challengeExtension > 0 ? input.challengeExtension : input.challengePeriod),
             challengePeriodStart: uint64(block.timestamp), //challenge start
             challengePeriodEnd: uint64(block.timestamp + input.challengePeriod), //chalenge end
-            amount: input.amount
+            amount: amount
         });
-
-        // If the payment was made in ERC20 and not ETH, execute the transfer
 
         // Store the escrow information
         escrows[escrowId] = escrow;

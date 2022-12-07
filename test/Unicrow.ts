@@ -233,6 +233,39 @@ describe("Unicrow", function () {
 
       expect((await unicrowContract.getEscrow(escrowId)).amount).to.eq(escrowValueEth);
     });
+
+    it("should not be able buyer deposits ETH with wrong currency", async function () {
+      await expect(
+        unicrowContract.connect(buyer).pay(
+          {
+            //@ts-ignore
+            ...payCommon,
+          },
+          ZERO_ADDRESS,
+          0,
+          {
+            value: escrowValueEth,
+          }
+        )
+      ).to.be.revertedWith("0-010")
+    });
+
+    it("should not be able to payment amount be equal 0", async function () {
+      await expect(
+        unicrowContract.connect(buyer).pay(
+          {
+            //@ts-ignore
+            ...payCommon,
+            amount: 0
+          },
+          ZERO_ADDRESS,
+          0,
+          {
+            value: escrowValueEth,
+          }
+        )
+      ).to.be.revertedWith("0-011")
+    });
   });
 
   context("When refund happens", function () {

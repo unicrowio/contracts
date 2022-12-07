@@ -131,7 +131,14 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         // Buyer cannot be seller
         require(buyer != input.seller, "0-003");
 
+        // Payment amount must be greater than zero
+        require(input.amount > 0, "0-011");
 
+        // Buyer can't send ETH if currency is not ETH
+        if(msg.value > 0) {
+            require(input.currency == address(0), "0-010");
+        }
+        
         // If the payment was made in ERC20 and not ETH, execute the transfer
         if (input.currency == address(0)) {
             // Amount in the payment metadata must match what was sent

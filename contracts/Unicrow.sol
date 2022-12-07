@@ -385,10 +385,9 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         );
 
         // Calculate seller's final share by substracting all the fees
-        unchecked {
-            split[WHO_SELLER] = currentSplit[WHO_SELLER] - split[WHO_PROTOCOL] - split[WHO_MARKETPLACE] - calculatedArbitratorFee;
-            split[WHO_BUYER] = currentSplit[WHO_BUYER];
-        }
+        split[WHO_SELLER] = currentSplit[WHO_SELLER] - split[WHO_PROTOCOL] - split[WHO_MARKETPLACE] - calculatedArbitratorFee;
+        split[WHO_BUYER] = currentSplit[WHO_BUYER];
+        
 
         return split;
     }

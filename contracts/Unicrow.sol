@@ -332,11 +332,9 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         address currency
     ) public onlyUnicrowClaim {
          if(currency == address(0)) {
-            (bool success, ) = to.call{value: amount}("");
-            require(success, "1-012");
+            to.call{value: amount, gas: 2300}("");
          } else {
-            SafeERC20.safeTransfer(
-                IERC20(currency),
+            ERC20(currency).transfer(
                 to,
                 amount
             );

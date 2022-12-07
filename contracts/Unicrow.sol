@@ -367,16 +367,16 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
     /// @inheritdoc IUnicrow
     function splitCalculation(
         uint16[5] calldata currentSplit
-    ) external pure override returns (uint16[4] memory) {
-        uint16[4] memory split;
+    ) external pure override returns (uint16[5] memory) {
+        uint16[5] memory split;
 
         uint16 calculatedArbitratorFee;
 
         // Discount the protocol fee based on seller's share
         if (currentSplit[WHO_PROTOCOL] > 0) {
-            split[WHO_PROTOCOL] = uint16(
+            split[WHO_PROTOCOL] = uint16((
                 uint256(currentSplit[WHO_PROTOCOL]) *
-                    currentSplit[WHO_SELLER] /
+                    currentSplit[WHO_SELLER]) /
                     _100_PCT_IN_BIPS
             );
         }
@@ -384,21 +384,26 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         // Discount the marketplace fee based on the seller's share
         if (currentSplit[WHO_MARKETPLACE] > 0) {
             split[WHO_MARKETPLACE] = uint16(
-                uint256(currentSplit[WHO_MARKETPLACE]) *
-                    currentSplit[WHO_SELLER] /
+                (uint256(currentSplit[WHO_MARKETPLACE]) *
+                    currentSplit[WHO_SELLER]) /
                     _100_PCT_IN_BIPS
             );
         }
 
-        // Discount the arbitrator's fee based on the seller's share
-        calculatedArbitratorFee = uint16(
-            uint256(currentSplit[WHO_ARBITRATOR]) * currentSplit[WHO_SELLER] / _100_PCT_IN_BIPS
-        );
+        // Calculate the arbitrator fee based on the seller's share
+        if (currentSplit[WHO_ARBITRATOR] > 0) {
+            calculatedArbitratorFee = uint16(
+                (uint256(currentSplit[WHO_ARBITRATOR]) *
+                    currentSplit[WHO_SELLER]) /
+                    _100_PCT_IN_BIPS
+            );
+        }
 
         // Calculate seller's final share by substracting all the fees
         unchecked {
             split[WHO_SELLER] = currentSplit[WHO_SELLER] - split[WHO_PROTOCOL] - split[WHO_MARKETPLACE] - calculatedArbitratorFee;
             split[WHO_BUYER] = currentSplit[WHO_BUYER];
+            split[WHO_ARBITRATOR] = calculatedArbitratorFee;
         }
 
         return split;

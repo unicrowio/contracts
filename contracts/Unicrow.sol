@@ -107,8 +107,6 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         _;
     }
 
-    receive() external payable {}
-
     /// @inheritdoc IUnicrow
     function pay(
         EscrowInput calldata input,
@@ -140,11 +138,23 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         if(msg.value > 0) {
             require(input.currency == address(0), "0-010");
         }
-
-        // Payment value must be greater than zero
-        if (msg.value != 0) {
+        
+        // If the payment was made in ERC20 and not ETH, execute the transfer
+        if (input.currency == address(0)) {
             // Amount in the payment metadata must match what was sent
             require(input.amount == msg.value);
+        } else {
+            SafeERC20.safeTransferFrom(
+                IERC20(input.currency),
+                buyer,
+                address(this),
+                input.amount
+            );
+        }
+
+        // Marketplace can't have fee greater than 0 without a address
+        if(input.marketplaceFee > 0) {
+            require(input.marketplace != address(0), "0-009");
         }
 
         // Check if the arbitrator was defined
@@ -180,14 +190,6 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         });
 
         // If the payment was made in ERC20 and not ETH, execute the transfer
-        if (input.currency != address(0)) {
-            SafeERC20.safeTransferFrom(
-                IERC20(input.currency),
-                buyer,
-                address(this),
-                input.amount
-            );
-        }
 
         // Store the escrow information
         escrows[escrowId] = escrow;
@@ -227,6 +229,10 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         escrows[escrowId].split = escrow.split;
         escrows[escrowId].consensus = escrow.consensus;
 
+        // Update the escrow as claimed in the storage and in the emitted event
+        escrows[escrowId].claimed = 1;
+        escrow.claimed = 1;
+
         // Withdraw the amount to the buyer
         if (address(escrow.currency) == address(0)) {
             (bool success, ) = escrow.buyer.call{value: escrow.amount}("");
@@ -239,9 +245,6 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
             );
         }
 
-        // Update the escrow as claimed in the storage and in the emitted event
-        escrows[escrowId].claimed = 1;
-        escrow.claimed = 1;
 
         emit Refund(escrowId, escrow, block.timestamp);
     }
@@ -402,7 +405,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
     }
 
     /// @inheritdoc IUnicrow
-    function setClaimed(uint256 escrowId) external override onlyUnicrowClaim {
+    function setClaimed(uint256 escrowId) external override onlyUnicrowClaim nonReentrant {
         escrows[escrowId].claimed = 1;
     }
 }

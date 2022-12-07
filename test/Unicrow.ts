@@ -198,6 +198,24 @@ describe("Unicrow", function () {
       expect((await unicrowContract.getEscrow(escrowId)).amount).to.eq(escrowValue);
     });
 
+    it("should not be able buyer deposits ERC20 into unicrowContract", async function () {
+      // Buyer needs to approve escrowValue allowance to unicrowContract contract
+      await fakeTokenContract.connect(buyer).approve(unicrowContract.address, escrowValue);
+
+      //@ts-ignore
+      await expect(
+        unicrowContract.connect(buyer).pay(
+          {
+            //@ts-ignore
+            ...payCommon,
+            marketplaceFee: 100
+          },
+          ZERO_ADDRESS,
+          0
+        )
+      ).to.be.revertedWith("0-009");
+    });
+
     it("should be able buyer deposits ETH payment to unicrowContract", async function () {
       await expect(
         unicrowContract.connect(buyer).pay(

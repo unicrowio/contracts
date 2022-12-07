@@ -18,7 +18,7 @@ import "./UnicrowTypes.sol";
  */
 contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
     /// Reference to the main escrow contract (immutable)
-    Unicrow public unicrow;
+    Unicrow public immutable unicrow;
 
     /// Reference to the Arbitrator contract (immutable)
     UnicrowArbitrator public immutable unicrowArbitrator;

@@ -69,7 +69,7 @@ interface IUnicrow {
    */
   function splitCalculation(
     uint16[5] calldata currentSplit
-  ) external returns(uint16[4] memory);
+  ) external returns(uint16[5] memory);
 
   /**
    * @dev Get the escrow data (without arbitrator or settlement information)

@@ -392,10 +392,10 @@ describe("UnicrowClaim", function () {
 
       await expect(() =>
         unicrowClaimContract.connect(seller).claim([escrowId])
-      ).to.changeTokenBalance(
+      ).to.changeTokenBalances(
         crowToken,
-        bob,
-        ethers.utils.parseUnits("1", 18)
+        [bob, seller],
+        [ethers.utils.parseUnits("0", 18), ethers.utils.parseUnits("100", 18)]
       );    
     });
 

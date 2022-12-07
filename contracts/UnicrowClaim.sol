@@ -98,17 +98,14 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
                 "0-006"
             );
 
-            uint16[4] memory calculatedSplits = calculateSplits(
+            uint16[5] memory calculatedSplits = calculateSplits(
                 arbitratorData,
                 escrow
             );
 
             uint256[5] memory payments = calculatePayments(
                 escrow.amount,
-                calculatedSplits,
-                escrow.split[WHO_SELLER],
-                arbitratorData.arbitratorFee,
-                arbitratorData.arbitrated
+                calculatedSplits
             );
 
             address[5] memory addresses = [
@@ -154,7 +151,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
         );
 
         // Calculate final splits (in bips) from gross splits
-        uint16[4] memory calculatedSplits = calculateSplits(
+        uint16[5] memory calculatedSplits = calculateSplits(
             arbitratorData,
             escrow
         );
@@ -162,10 +159,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
         // Calculate amounts to be sent in the token
         uint256[5] memory payments = calculatePayments(
             escrow.amount,
-            calculatedSplits,
-            escrow.split[WHO_SELLER],
-            arbitratorData.arbitratorFee,
-            arbitratorData.arbitrated
+            calculatedSplits
         );
 
         // Prepare list of addresses for the withdrawals
@@ -209,8 +203,8 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
     function calculateSplits(
         Arbitrator memory arbitrator,
         Escrow memory escrow
-    ) internal view returns(uint16[4] memory) {
-        uint16[4] memory split;
+    ) internal view returns(uint16[5] memory) {
+        uint16[5] memory split;
 
         bool arbitratorConsensus = arbitrator.buyerConsensus && arbitrator.sellerConsensus;
 
@@ -244,35 +238,24 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
      * @dev Calculates actual amounts that should be sent to the parties
      * @param amount payment amount in escrow (in token)
      * @param split final splits
-     * @param fullSellerSplit seller split 
-     * @param arbitratorFee Arbitrator fee
-     * @param arbitrated whether the payment was arbitrated (it impacts final arbitrator's fee for refunds)
      */
     function calculatePayments(
         uint amount,
-        uint16[4] memory split,
-        uint16 fullSellerSplit,
-        uint16 arbitratorFee,
-        bool arbitrated
+        uint16[5] memory split
     ) internal pure returns(uint256[5] memory) {
         uint256[5] memory payments;
 
         // Multiply all the splits by the total amount
-        payments[WHO_BUYER] = uint256(split[WHO_BUYER]) * amount / _100_PCT_IN_BIPS;
-        payments[WHO_SELLER] = uint256(split[WHO_SELLER]) * amount / _100_PCT_IN_BIPS;
-        payments[WHO_MARKETPLACE] = uint256(split[WHO_MARKETPLACE]) * amount / _100_PCT_IN_BIPS;
-        payments[WHO_PROTOCOL] = uint256(split[WHO_PROTOCOL]) * amount / _100_PCT_IN_BIPS;
+        payments[WHO_BUYER] = (uint256(split[WHO_BUYER]) * amount) / _100_PCT_IN_BIPS;
+        payments[WHO_SELLER] = (uint256(split[WHO_SELLER]) * amount) / _100_PCT_IN_BIPS;
+        payments[WHO_MARKETPLACE] = (uint256(split[WHO_MARKETPLACE]) * amount) / _100_PCT_IN_BIPS;
+    
+        // If the arbitrator decided the payment, they get their full fee
+        // in such case, buyer's or seller split was reduced in the calling function)
+        payments[WHO_ARBITRATOR] = (uint256(split[WHO_ARBITRATOR]) * amount) / _100_PCT_IN_BIPS;
 
-        if(!arbitrated) {
-            // If the payment wasn't arbitrated, the arbitrator fee is calculated from seller's share
-            // (normally 100%, but could be 0 for refund)
-            uint16 arbitratorFee_ = uint16(uint256(arbitratorFee) * fullSellerSplit / _100_PCT_IN_BIPS);
-            payments[WHO_ARBITRATOR] = uint256(arbitratorFee_) * amount / _100_PCT_IN_BIPS;
-        } else {
-            // If the arbitrator decided the payment, they get their full fee
-            // (in such case, buyer's split was reduced in the calling function)
-            payments[WHO_ARBITRATOR] = uint256(arbitratorFee)* amount / _100_PCT_IN_BIPS;
-        }
+        // The rest of the amount goes to the protocol
+        payments[WHO_PROTOCOL] = amount - payments[WHO_BUYER] - payments[WHO_SELLER] - payments[WHO_MARKETPLACE] - payments[WHO_ARBITRATOR];
 
         return payments;
     }

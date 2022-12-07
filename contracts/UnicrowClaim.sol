@@ -18,7 +18,7 @@ import "./UnicrowTypes.sol";
  */
 contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
     /// Reference to the main escrow contract (immutable)
-    Unicrow public unicrow;
+    Unicrow public immutable unicrow;
 
     /// Reference to the Arbitrator contract (immutable)
     UnicrowArbitrator public immutable unicrowArbitrator;
@@ -79,11 +79,11 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
     }
 
     /// @inheritdoc IUnicrowClaim
-    function claim(uint[] calldata escrows) external override payable nonReentrant {
+    function claim(uint[] calldata escrows) external override nonReentrant {
 
         ClaimEvent[] memory events = new ClaimEvent[](escrows.length);
 
-        for (uint256 i = 0; i < escrows.length; i++) {
+        for (uint256 i = 0; i < escrows.length; ++i) {
             Escrow memory escrow = unicrow.getEscrow(escrows[i]);
 
             Arbitrator memory arbitratorData = unicrowArbitrator
@@ -133,7 +133,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
     }
 
     /// @inheritdoc IUnicrowClaim
-    function singleClaim(uint escrowId) external override payable nonReentrant returns(uint256[5] memory) {
+    function singleClaim(uint escrowId) external override nonReentrant returns(uint256[5] memory) {
         Escrow memory escrow = unicrow.getEscrow(escrowId);
 
         Arbitrator memory arbitratorData = unicrowArbitrator
@@ -205,7 +205,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
         Escrow memory escrow
     ) internal view returns(uint16[5] memory) {
         uint16[5] memory split;
-
+        
         bool arbitratorConsensus = arbitrator.buyerConsensus && arbitrator.sellerConsensus;
         uint16 arbitratorFee = arbitratorConsensus ? arbitrator.arbitratorFee : 0;
 
@@ -276,7 +276,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
     ) internal {
         unicrow.setClaimed(escrowId);
 
-        for (uint256 i = 0; i < amounts.length; i++) {
+        for (uint256 i = 0; i < 5; ++i) {
             if (amounts[i] > 0) {
                 unicrow.sendEscrowShare(addresses[i], amounts[i], currency);
             }

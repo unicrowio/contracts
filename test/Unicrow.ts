@@ -198,6 +198,24 @@ describe("Unicrow", function () {
       expect((await unicrowContract.getEscrow(escrowId)).amount).to.eq(escrowValue);
     });
 
+    it("should not be able buyer deposits ERC20 into unicrowContract", async function () {
+      // Buyer needs to approve escrowValue allowance to unicrowContract contract
+      await fakeTokenContract.connect(buyer).approve(unicrowContract.address, escrowValue);
+
+      //@ts-ignore
+      await expect(
+        unicrowContract.connect(buyer).pay(
+          {
+            //@ts-ignore
+            ...payCommon,
+            marketplaceFee: 100
+          },
+          ZERO_ADDRESS,
+          0
+        )
+      ).to.be.revertedWith("0-009");
+    });
+
     it("should be able buyer deposits ETH payment to unicrowContract", async function () {
       await expect(
         unicrowContract.connect(buyer).pay(
@@ -214,6 +232,39 @@ describe("Unicrow", function () {
       ).to.emit(unicrowContract, "Pay");
 
       expect((await unicrowContract.getEscrow(escrowId)).amount).to.eq(escrowValueEth);
+    });
+
+    it("should not be able buyer deposits ETH with wrong currency", async function () {
+      await expect(
+        unicrowContract.connect(buyer).pay(
+          {
+            //@ts-ignore
+            ...payCommon,
+          },
+          ZERO_ADDRESS,
+          0,
+          {
+            value: escrowValueEth,
+          }
+        )
+      ).to.be.revertedWith("0-010")
+    });
+
+    it("should not be able to payment amount be equal 0", async function () {
+      await expect(
+        unicrowContract.connect(buyer).pay(
+          {
+            //@ts-ignore
+            ...payCommon,
+            amount: 0
+          },
+          ZERO_ADDRESS,
+          0,
+          {
+            value: escrowValueEth,
+          }
+        )
+      ).to.be.revertedWith("0-011")
     });
   });
 

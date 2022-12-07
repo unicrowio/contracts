@@ -124,7 +124,7 @@ struct Settlement {
 /// @dev Information about the token used in the payment is returned in this structure
 struct Token {
     address address_;
-    uint256 decimals;
+    uint8 decimals;
     string symbol;
 }
 

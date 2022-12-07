@@ -133,10 +133,18 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         // Buyer cannot be seller
         require(buyer != input.seller, "0-003");
 
-        // Payment value must be greater than zero
-        if (msg.value != 0) {
+
+        // If the payment was made in ERC20 and not ETH, execute the transfer
+        if (input.currency == address(0)) {
             // Amount in the payment metadata must match what was sent
             require(input.amount == msg.value);
+        } else {
+            SafeERC20.safeTransferFrom(
+                IERC20(input.currency),
+                buyer,
+                address(this),
+                input.amount
+            );
         }
 
         // Check if the arbitrator was defined
@@ -172,14 +180,6 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         });
 
         // If the payment was made in ERC20 and not ETH, execute the transfer
-        if (input.currency != address(0)) {
-            SafeERC20.safeTransferFrom(
-                IERC20(input.currency),
-                buyer,
-                address(this),
-                input.amount
-            );
-        }
 
         // Store the escrow information
         escrows[escrowId] = escrow;

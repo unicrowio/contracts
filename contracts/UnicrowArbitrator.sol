@@ -18,6 +18,7 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
 
     /// Reference to the main Unicrow contract
     Unicrow public immutable unicrow;
+    
     /// Reference to the contract that manages claims from the escrows
     IUnicrowClaim public immutable unicrowClaim;
 
@@ -70,16 +71,7 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
      * @param caller Address to check against
      */
     modifier onlyEscrowMember(uint256 escrowId, address caller) {
-        require(_isEscrowBuyer(escrowId, caller) || _isEscrowSeller(escrowId, caller), "2-004");
-        _;
-    }
-
-    /**
-     * @dev Checks if the caller is a seller in an escrow with the provided id
-     * @param escrowId Id of the escrow to check
-     */
-    modifier onlyEscrowSeller(uint256 escrowId) {
-        require(_isEscrowSeller(escrowId, _msgSender()));
+        require(_isEscrowMember(escrowId, caller), "2-004");
         _;
     }
 
@@ -128,10 +120,10 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
         arbitratorData.arbitratorFee = arbitratorFee;
 
         // That the arbitrator is only proposed and not assigne is indicated by a lack of consensus
-        if (_isEscrowBuyer(escrowId, _msgSender())) {
+        if (_isEscrowBuyer(escrow, _msgSender())) {
             arbitratorData.buyerConsensus = true;
             arbitratorData.sellerConsensus = false;
-        } else if (_isEscrowSeller(escrowId, _msgSender())) {
+        } else if (_isEscrowSeller(escrow, _msgSender())) {
             arbitratorData.sellerConsensus = true;
             arbitratorData.buyerConsensus = false;
         }
@@ -151,6 +143,7 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
         onlyEscrowMember(escrowId, _msgSender())
     {
         Arbitrator memory arbitratorData = getArbitratorData(escrowId);
+        Escrow memory escrow = unicrow.getEscrow(escrowId);
 
         // Check that the arbitrator has been proposed
         require(arbitratorData.arbitrator != address(0), "2-008");
@@ -160,14 +153,14 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
         require(validation == arbitratorData.arbitratorFee, "2-007");
 
         // Check that the buyer is approving seller's proposal (or vice versa) and if yes, confirm the consensus
-        if (_isEscrowBuyer(escrowId, _msgSender())) {
+        if (_isEscrowBuyer(escrow, _msgSender())) {
             require(
                 arbitratorData.buyerConsensus == false,
                 "2-003"
             );
             escrowArbitrator[escrowId].buyerConsensus = true;
         }
-        if (_isEscrowSeller(escrowId, _msgSender())) {
+        if (_isEscrowSeller(escrow, _msgSender())) {
             require(
                 arbitratorData.sellerConsensus == false,
                 "2-003"
@@ -232,31 +225,36 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
      */
     function arbitrationCalculation(
         uint16[5] calldata currentSplit
-    ) public pure returns (uint16[4] memory) {
-        uint16[4] memory split;
+    ) public pure returns (uint16[5] memory) {
+        uint16[5] memory split;
 
         uint16 calculatedSellerArbitratorFee;
         uint16 calculatedBuyerArbitratorFee;
 
-        // Calculate buyer's portion of the arbitrator fee
-        calculatedBuyerArbitratorFee = uint16(
-            uint256(currentSplit[WHO_ARBITRATOR])
-                    * currentSplit[WHO_BUYER]
+        if(currentSplit[WHO_ARBITRATOR] > 0) {
+            // Calculate buyer's portion of the arbitrator fee
+            calculatedBuyerArbitratorFee = uint16(
+                (uint256(currentSplit[WHO_ARBITRATOR])
+                        * currentSplit[WHO_BUYER])
+                        / _100_PCT_IN_BIPS
+            );
+            
+             // Seller's portion of the arbitrator fee
+            calculatedSellerArbitratorFee = uint16(
+                (uint256(currentSplit[WHO_ARBITRATOR])
+                    * currentSplit[WHO_SELLER])
                     / _100_PCT_IN_BIPS
-        );
-
-        // Seller's portion of the arbitrator fee
-        calculatedSellerArbitratorFee = uint16(
-            uint256(currentSplit[WHO_ARBITRATOR])
-                * currentSplit[WHO_SELLER]
-                / _100_PCT_IN_BIPS
-        );
+            );
+            
+            // Store how much the arbitrator will get from each party
+            split[WHO_ARBITRATOR] = calculatedBuyerArbitratorFee + calculatedSellerArbitratorFee;
+        }
 
         // Protocol fee
         if (currentSplit[WHO_PROTOCOL] > 0) {
             split[WHO_PROTOCOL] = uint16(
-                uint256(currentSplit[WHO_PROTOCOL])
-                    * currentSplit[WHO_SELLER]
+                (uint256(currentSplit[WHO_PROTOCOL])
+                    * currentSplit[WHO_SELLER])
                     / _100_PCT_IN_BIPS
             );
         }
@@ -264,8 +262,8 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
         // Marketplace fee
         if (currentSplit[WHO_MARKETPLACE] > 0) {
             split[WHO_MARKETPLACE] = uint16(
-                uint256(currentSplit[WHO_MARKETPLACE])
-                    * currentSplit[WHO_SELLER]
+                (uint256(currentSplit[WHO_MARKETPLACE])
+                    * currentSplit[WHO_SELLER])
                     / _100_PCT_IN_BIPS
             );
         }
@@ -304,26 +302,40 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
     /**
      * @dev Checks whether an address is a buyer in the provided escrow
      * @param escrowId Id of the escrow to check against
-     * @param _buyer the addres to check
+     * @param member_ the address to check
      */
-    function _isEscrowBuyer(uint256 escrowId, address _buyer)
+    function _isEscrowMember(uint256 escrowId, address member_)
         internal
         view
         returns (bool)
     {
-        return _buyer == unicrow.getEscrow(escrowId).buyer;
+        Escrow memory escrow = unicrow.getEscrow(escrowId);
+        return escrow.buyer == member_ || escrow.seller == member_;
+    }
+
+    /**
+     * @dev Checks whether an address is a buyer in the provided escrow
+     * @param escrow Instance of escrow
+     * @param _buyer the address to check
+     */
+    function _isEscrowBuyer(Escrow memory escrow, address _buyer)
+        internal
+        pure
+        returns (bool)
+    {
+        return _buyer == escrow.buyer;
     }
 
     /**
      * @dev Checks whether an address is a seller in the provided escrow
-     * @param escrowId Id of the escrow to check against
-     * @param _seller the addres to check
+     * @param escrow Instance of escrow
+     * @param _seller the address to check
      */
-    function _isEscrowSeller(uint256 escrowId, address _seller)
+    function _isEscrowSeller(Escrow memory escrow, address _seller)
         internal
-        view
+        pure
         returns (bool)
     {
-        return _seller == unicrow.getEscrow(escrowId).seller;
+        return _seller == escrow.seller;
     }
 }

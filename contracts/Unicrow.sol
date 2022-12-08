@@ -142,7 +142,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
             require(input.currency == address(0), "0-010");
         }
         
-        // If the payment was made in ERC20 and not ETH, execute the transfer
+        // Continue based on whether the payment is in ETH or ERC20
         if (input.currency == address(0)) {
             // Amount in the payment metadata must match what was sent
             require(amount == msg.value);

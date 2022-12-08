@@ -118,11 +118,11 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
 
             claimPayments(escrows[i], payments, addresses, escrow.currency);
 
-            if(address(crowRewards) != address(0)){
-                crowRewards.distribute(escrow.buyer, escrow.seller, payments[WHO_PROTOCOL]);
+            if(address(crowRewards) != address(0) && payments[WHO_PROTOCOL] > 0){
+                crowRewards.distribute(escrow.buyer, escrow.seller, payments[WHO_PROTOCOL], escrow.currency);
             }
 
-            if(address(stakingRewards) != address(0)){
+            if(address(stakingRewards) != address(0) && payments[WHO_PROTOCOL] > 0){
                 stakingRewards.collectFee(escrow.currency, payments[WHO_PROTOCOL]);
             }
 
@@ -174,11 +174,11 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
         // Send the shares to the addresses
         claimPayments(escrowId, payments, addresses, escrow.currency);
 
-        if(address(crowRewards) != address(0)){
-            crowRewards.distribute(escrow.buyer, escrow.seller, payments[WHO_PROTOCOL]);
+        if(address(crowRewards) != address(0) && payments[WHO_PROTOCOL] > 0){
+            crowRewards.distribute(escrow.buyer, escrow.seller, payments[WHO_PROTOCOL], escrow.currency);
         }
 
-        if(address(stakingRewards) != address(0)){
+        if(address(stakingRewards) != address(0) && payments[WHO_PROTOCOL] > 0){
             stakingRewards.collectFee(escrow.currency, payments[WHO_PROTOCOL]);
         }
 

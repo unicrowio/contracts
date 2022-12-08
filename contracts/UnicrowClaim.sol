@@ -119,7 +119,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
             claimPayments(escrows[i], payments, addresses, escrow.currency);
 
             if(address(crowRewards) != address(0) && payments[WHO_PROTOCOL] > 0){
-                crowRewards.distribute(escrow.buyer, escrow.seller, payments[WHO_PROTOCOL], escrow.currency);
+                crowRewards.distribute(escrow.currency, escrow.buyer, escrow.seller, payments[WHO_PROTOCOL]);
             }
 
             if(address(stakingRewards) != address(0) && payments[WHO_PROTOCOL] > 0){
@@ -175,7 +175,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
         claimPayments(escrowId, payments, addresses, escrow.currency);
 
         if(address(crowRewards) != address(0) && payments[WHO_PROTOCOL] > 0){
-            crowRewards.distribute(escrow.buyer, escrow.seller, payments[WHO_PROTOCOL], escrow.currency);
+            crowRewards.distribute(escrow.currency, escrow.buyer, escrow.seller, payments[WHO_PROTOCOL]);
         }
 
         if(address(stakingRewards) != address(0) && payments[WHO_PROTOCOL] > 0){

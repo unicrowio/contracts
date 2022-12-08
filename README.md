@@ -8,7 +8,7 @@ The map below might be useful to get quick bearings
 
 Run this command to install the packages:
 
-```i
+```bash
 yarn install
 ```
 
@@ -35,7 +35,7 @@ yarn hardhat node
 ## Deploy the Contracts
 
 Setup environment variables:
-```
+```bash
 cp .env.example .env
 ```
 

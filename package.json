@@ -5,7 +5,8 @@
   "scripts": {
     "build": "yarn clean && hardhat compile",
     "clean": "hardhat clean",
-    "test": "hardhat test"
+    "test": "hardhat test",
+    "deploy:crow": "yarn hardhat run ./scripts/deploy.ts --network localhost",
   },
   "devDependencies": {
     "@ethersproject/address": "5.7.0",

@@ -4,8 +4,8 @@ import { getContractAddress } from "@ethersproject/address";
 
 dotenv.config();
 
-const GNOSIS_SAFE_ADDRESS = process.env.GNSOSIS_SAFE_ADDRESS as string;
-const UNICROW_FEE = 0 // bips;
+const GNOSIS_SAFE_ADDRESS = process.env.GNOSIS_SAFE_ADDRESS as string;
+const UNICROW_FEE = 80 // bips;
 
 async function main() {
   const [deployer] = await ethers.getSigners();

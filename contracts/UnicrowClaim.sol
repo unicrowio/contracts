@@ -206,6 +206,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
     ) internal view returns(uint16[5] memory) {
         uint16[5] memory split;
         
+        // if the arbitrator was set, read their fee, otherwise set to 0
         bool arbitratorConsensus = arbitrator.buyerConsensus && arbitrator.sellerConsensus;
         uint16 arbitratorFee = arbitratorConsensus ? arbitrator.arbitratorFee : 0;
 

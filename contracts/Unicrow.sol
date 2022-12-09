@@ -142,7 +142,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
             require(input.currency == address(0), "0-010");
         }
         
-        // If the payment was made in ERC20 and not ETH, execute the transfer
+        // Check if the payment was made in ETH 
         if (input.currency == address(0)) {
             // Amount in the payment metadata must match what was sent
             require(amount == msg.value);
@@ -159,11 +159,11 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
 
             uint balanceAfter = IERC20(input.currency).balanceOf(address(this));
 
-            // Making sure that the input amount is the amount received
+            // Make sure that the input amount is the amount received
             amount = balanceAfter - balanceBefore;
         }
 
-        // Marketplace can't have fee greater than 0 without a address
+        // If a marketplace fee was set, ensure a marketplace address was set
         if(input.marketplaceFee > 0) {
             require(input.marketplace != address(0), "0-009");
         }
@@ -397,7 +397,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
             );
         }
 
-        // Calculate the arbitrator fee based on the seller's share
+        // Calculate the arbitrator fee based on the seller's split
         if (currentSplit[WHO_ARBITRATOR] > 0) {
             calculatedArbitratorFee = uint16(
                 (uint256(currentSplit[WHO_ARBITRATOR]) *

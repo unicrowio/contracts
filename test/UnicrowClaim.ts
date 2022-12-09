@@ -110,7 +110,7 @@ describe("UnicrowClaim", function () {
       await network.provider.send("evm_mine");
 
       await expect(() =>
-        unicrowClaimContract.connect(seller).singleClaim(escrowId)
+        unicrowClaimContract.connect(seller).claim(escrowId)
       ).to.changeTokenBalances(
         crowToken,
         [buyer, seller, treasury],
@@ -214,7 +214,7 @@ describe("UnicrowClaim", function () {
       await network.provider.send("evm_increaseTime", [600]);
       await network.provider.send("evm_mine");
 
-      await unicrowClaimContract.connect(seller).claim([escrowId]);
+      await unicrowClaimContract.connect(seller).claimMultiple([escrowId]);
 
       await expect(unicrowContract.connect(buyer).release(escrowId)).to.to.be.revertedWith(
         "0-005"
@@ -238,7 +238,7 @@ describe("UnicrowClaim", function () {
       await network.provider.send("evm_mine");
 
       await expect(() =>
-        unicrowClaimContract.connect(seller).claim([escrowId])
+        unicrowClaimContract.connect(seller).claimMultiple([escrowId])
       ).to.changeTokenBalances(
         crowToken,
         [buyer, seller, bob],
@@ -276,7 +276,7 @@ describe("UnicrowClaim", function () {
       );
 
       await expect(
-        unicrowClaimContract.connect(buyer).singleClaim(escrowId)
+        unicrowClaimContract.connect(buyer).claim(escrowId)
       ).to.be.revertedWith("0-005");
     });
 
@@ -324,7 +324,7 @@ describe("UnicrowClaim", function () {
       await network.provider.send("evm_increaseTime", [300]);
       await network.provider.send("evm_mine");
 
-      await expect(unicrowClaimContract.connect(seller).claim([escrowId])).to.emit(
+      await expect(unicrowClaimContract.connect(seller).claimMultiple([escrowId])).to.emit(
         unicrowClaimContract,
         "Claim"
       );
@@ -345,7 +345,7 @@ describe("UnicrowClaim", function () {
       await network.provider.send("evm_mine");
 
       await expect(() =>
-        unicrowClaimContract.connect(seller).claim([escrowId])
+        unicrowClaimContract.connect(seller).claimMultiple([escrowId])
       ).to.changeTokenBalance(
         crowToken,
         seller,
@@ -367,10 +367,10 @@ describe("UnicrowClaim", function () {
       await network.provider.send("evm_increaseTime", [300]);
       await network.provider.send("evm_mine");
 
-      await unicrowClaimContract.connect(seller).claim([escrowId]);
+      await unicrowClaimContract.connect(seller).claimMultiple([escrowId]);
 
       await expect(
-        unicrowClaimContract.connect(seller).claim([escrowId])
+        unicrowClaimContract.connect(seller).claimMultiple([escrowId])
       ).to.be.revertedWith("0-005");
     });
 
@@ -391,7 +391,7 @@ describe("UnicrowClaim", function () {
       await unicrowArbitratorContract.connect(seller).proposeArbitrator(escrowId, bob.address, 1000);
 
       await expect(() =>
-        unicrowClaimContract.connect(seller).claim([escrowId])
+        unicrowClaimContract.connect(seller).claimMultiple([escrowId])
       ).to.changeTokenBalances(
         crowToken,
         [bob, seller],
@@ -416,7 +416,7 @@ describe("UnicrowClaim", function () {
       await network.provider.send("evm_mine");
 
       await expect(() =>
-        unicrowClaimContract.connect(seller).claim([escrowId])
+        unicrowClaimContract.connect(seller).claimMultiple([escrowId])
       ).to.changeTokenBalance(
         crowToken,
         marketplace,
@@ -439,7 +439,7 @@ describe("UnicrowClaim", function () {
       await network.provider.send("evm_mine");
 
       await expect(() =>
-        unicrowClaimContract.connect(seller).claim([escrowId])
+        unicrowClaimContract.connect(seller).claimMultiple([escrowId])
       ).to.changeEtherBalance(seller, ethers.utils.parseUnits("100", 18));
     });
 
@@ -468,7 +468,7 @@ describe("UnicrowClaim", function () {
       await network.provider.send("evm_mine");
 
       await expect(() =>
-        unicrowClaimContract.connect(seller).claim([escrowId, secondEscrowId])
+        unicrowClaimContract.connect(seller).claimMultiple([escrowId, secondEscrowId])
       ).to.changeTokenBalance(
         crowToken,
         seller,
@@ -488,7 +488,7 @@ describe("UnicrowClaim", function () {
       );
 
       await expect(
-        unicrowClaimContract.connect(seller).claim([escrowId])
+        unicrowClaimContract.connect(seller).claimMultiple([escrowId])
       ).to.be.revertedWith("0-006");
     });
   });

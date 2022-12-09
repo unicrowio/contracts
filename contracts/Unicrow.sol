@@ -89,7 +89,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         _;
     }
 
-    /// Check that Unicrow's claim contract is calling this
+    /// Check that Unicrow's claimMultiple contract is calling this
     modifier onlyUnicrowClaim() {
         require(_msgSender() == address(unicrowClaim));
         _;
@@ -276,7 +276,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         escrows[escrowId].consensus = escrow.consensus;
 
         // Claim the payment and fees and get the final amounts
-        uint256[5] memory amounts = unicrowClaim.singleClaim(escrowId);
+        uint256[5] memory amounts = unicrowClaim.claim(escrowId);
 
         // Emit all the information including the amounts
         emit Release(escrowId, block.timestamp, escrow, amounts);

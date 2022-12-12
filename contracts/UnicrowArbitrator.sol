@@ -109,6 +109,9 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
         // Arbitrator can't be address 0
         require(arbitrator != address(0), "2-009");
 
+        // Check if arbitrator is not the buyer or seller
+        require(arbitrator != escrow.buyer && arbitrator != escrow.seller, "2-010");
+
         // Check that arbitrator hasnt't been set already
         require(!arbitratorData.buyerConsensus || !arbitratorData.sellerConsensus,"2-006" );
 

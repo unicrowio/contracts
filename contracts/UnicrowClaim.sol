@@ -79,7 +79,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
     }
 
     /// @inheritdoc IUnicrowClaim
-    function claim(uint[] calldata escrows) external override nonReentrant {
+    function claimMultiple(uint[] calldata escrows) external override nonReentrant {
 
         ClaimEvent[] memory events = new ClaimEvent[](escrows.length);
 
@@ -133,7 +133,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
     }
 
     /// @inheritdoc IUnicrowClaim
-    function singleClaim(uint escrowId) external override nonReentrant returns(uint256[5] memory) {
+    function claim(uint escrowId) external override nonReentrant returns(uint256[5] memory) {
         Escrow memory escrow = unicrow.getEscrow(escrowId);
 
         Arbitrator memory arbitratorData = unicrowArbitrator
@@ -265,7 +265,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
     /**
      * @dev Sends payments to the addresses of all the eligible parties
      * @param escrowId Id of the escrow
-     * @param amounts amounts in token to claim
+     * @param amounts amounts in token to claimMultiple
      * @param addresses destination addresses for each claimed share
      * @param currency address of the payment token
      */

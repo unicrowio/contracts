@@ -53,7 +53,7 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
     event Arbitrated(uint256 indexed escrowId, Escrow escrow, uint256 blockTime, uint256[5] amounts);
 
     /**
-     * The constructor provides immutable reference to the main escrow and claim contracts
+     * The constructor provides immutable reference to the main escrow and claimMultiple contracts
      * @param unicrow_ Unicrow contract address
      * @param unicrowClaim_ UnicrowClaim contract address
      */
@@ -214,7 +214,7 @@ contract UnicrowArbitrator is IUnicrowArbitrator, Context, ReentrancyGuard {
 
         // Withdraw the amounts accordingly
         //   (this will take into account that arbitrator called this and will set arbitrator fee accordingly)
-        uint256[5] memory amounts = unicrowClaim.singleClaim(escrowId);
+        uint256[5] memory amounts = unicrowClaim.claim(escrowId);
 
         emit Arbitrated(escrowId, escrow, block.timestamp, amounts);
     }

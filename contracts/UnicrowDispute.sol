@@ -217,7 +217,7 @@ contract UnicrowDispute is IUnicrowDispute, Context, ReentrancyGuard {
         );
 
         // Sent shares to all the parties and read the final amounts
-        uint256[5] memory amounts = unicrowClaim.singleClaim(escrowId);
+        uint256[5] memory amounts = unicrowClaim.claim(escrowId);
 
         emit ApproveOffer(escrowId, escrow, latestOffer, block.timestamp, amounts);
     }

@@ -55,20 +55,20 @@ yarn deploy:crow
 
 It is recommended running the tests (see below) to test interactions with the contracts, but it is possible to do it using the console too by running a console instance first and then attaching an address.
 
-To open the console:
+Open the console:
 
 ```bash
 yarn hardhat console --network development
 ```
 
-After the contract opened you can use the contracts doing it:
+Initiate the contract
 
 ```bash
 let unicrow = ethers.getContractFactory("Unicrow") // Replace "Unicrow" for a name of any other contract
 unicrow = await unicrow.attach("address_of_the_contract_here"); // address you got during the deployment
 ```
 
-To use the contract functions
+Call the contract functions
 
 ```bash
 await unicrow.pay({ paramters }) 

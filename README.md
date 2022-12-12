@@ -61,14 +61,14 @@ Open the console:
 yarn hardhat console --network development
 ```
 
-Initiate the contract
+Initiate a contract:
 
 ```bash
 let unicrow = ethers.getContractFactory("Unicrow") // Replace "Unicrow" for a name of any other contract
 unicrow = await unicrow.attach("address_of_the_contract_here"); // address you got during the deployment
 ```
 
-Call the contract functions
+Call the contract function:
 
 ```bash
 await unicrow.pay({ paramters }) 

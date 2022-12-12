@@ -156,6 +156,76 @@ describe("UnicrowArbitrator", function () {
       ).to.be.revertedWith("2-006");
     });
 
+    it("should not be able to add buyer as a arbitrator", async function () {
+      // Buyer needs to approve escrowValue allowance to unicrowContract contract
+
+      await crowToken.connect(buyer).approve(unicrowContract.address, escrowValueParsed);
+
+      await expect(unicrowContract.connect(buyer).pay(
+        {
+          //@ts-ignore
+          ...payCommon,
+        },
+        buyer.address,
+        0
+      )).to.be.revertedWith("1-027");
+    });
+
+    it("should not be able to add seller as a arbitrator", async function () {
+      // Buyer needs to approve escrowValue allowance to unicrowContract contract
+
+      await crowToken.connect(buyer).approve(unicrowContract.address, escrowValueParsed);
+
+      await expect(unicrowContract.connect(buyer).pay(
+        {
+          //@ts-ignore
+          ...payCommon,
+        },
+        seller.address,
+        0
+      )).to.be.revertedWith("1-027");
+    });
+
+    it("should not be able to propose buyer as a arbitrator", async function () {
+      // Buyer needs to approve escrowValue allowance to unicrowContract contract
+
+      await crowToken.connect(buyer).approve(unicrowContract.address, escrowValueParsed);
+
+      await unicrowContract.connect(buyer).pay(
+        {
+          //@ts-ignore
+          ...payCommon,
+        },
+        ZERO_ADDRESS,
+        0
+      );
+
+      await expect(unicrowArbitratorContract
+        .connect(buyer)
+        .proposeArbitrator(escrowId, buyer.address, 200)
+      ).to.be.revertedWith("2-010");
+    });
+
+    it("should not be able to propose seller as a arbitrator", async function () {
+      // Buyer needs to approve escrowValue allowance to unicrowContract contract
+
+      await crowToken.connect(buyer).approve(unicrowContract.address, escrowValueParsed);
+
+      await unicrowContract.connect(buyer).pay(
+        {
+          //@ts-ignore
+          ...payCommon,
+        },
+        ZERO_ADDRESS,
+        0
+      );
+
+      await expect(unicrowArbitratorContract
+        .connect(seller)
+        .proposeArbitrator(escrowId, seller.address, 200)
+      ).to.be.revertedWith("2-010");
+    });
+
     it("should not be able to add an arbitrator with a wrong validation address field", async function () {
       // Buyer needs to approve escrowValue allowance to unicrowContract contract
 

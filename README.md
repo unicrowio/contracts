@@ -4,6 +4,8 @@ The map below might be useful to get quick bearings
 
 ![Contracts Map](./contracts-map.png)
 
+_Note: To make the map reasonably orderly, only the most significant relationships are displayed_
+
 # Basic Setup and Types
 
 To install the packages:

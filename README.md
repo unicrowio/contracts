@@ -1,4 +1,4 @@
-# Contracts and interfaces for Unicrow audit
+# Unicrow Contracts and Interfaces
 
 The map below might be useful to get quick bearings
 
@@ -6,19 +6,19 @@ The map below might be useful to get quick bearings
 
 # Basic Setup and Types
 
-Run this command to install the packages:
+To install the packages:
 
 ```bash
 yarn install
 ```
 
-Run this command to generate the types and compile the contracts with the new ABI:
+To generate the types and compile the contracts with the new ABI:
 
 ```bash
 yarn hardhat compile
 ```
 
-Run this command to get the local rpc accounts:
+To get local rpc accounts:
 
 ```bash
 yarn hardhat accounts
@@ -41,21 +41,21 @@ cp .env.example .env
 
 | KEY                 | VALUE                                            |
 |---------------------|--------------------------------------------------|
-| GNOSIS_SAFE_ADDRESS | Governance address multisign                     |
+| GNOSIS_SAFE_ADDRESS | Governance address multisig                      |
 | PRIVATE_KEY         | Deployer account                                 |
 | NODE_URL            | Infura, Alchemy or any node to deploy to mainnet |
 
-Deploy the crow contracts with your local rpc:
+Deploy the Unicrow contracts with your local rpc:
 
 ```bash
 yarn deploy:crow
 ```
 
-## Interact using console
+## Interact using a console
 
-To interact with the contracts on the console you need to instance then and attach the address (or using the tests, that is easier than console).
+It is recommended running the tests (see below) to test interactions with the contracts, but it is possible to do it using the console too by running a console instance first and then attaching an address.
 
-Run this command to open the rpc and interact with the contracts locally:
+To open the console:
 
 ```bash
 yarn hardhat console --network development
@@ -64,14 +64,14 @@ yarn hardhat console --network development
 After the contract opened you can use the contracts doing it:
 
 ```bash
-let crow = ethers.getContractFactory("Crow") // or other contract names
-crow = await crow.attach("address_of_the_contract_here");
+let unicrow = ethers.getContractFactory("Unicrow") // Replace "Unicrow" for a name of any other contract
+unicrow = await unicrow.attach("address_of_the_contract_here"); // address you got during the deployment
 ```
 
-And now just use the contract functions
+To use the contract functions
 
 ```bash
-await crow.pay({ paramters }) // in this case can be better to run the utils script that's faster than fill all paramters
+await unicrow.pay({ paramters }) 
 ```
 
 ## Tests

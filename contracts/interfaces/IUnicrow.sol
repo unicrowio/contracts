@@ -5,7 +5,11 @@ import "../UnicrowTypes.sol";
 
 interface IUnicrow {
   /**
-   * @notice Deposit ETH or SafeERC20 to open a new escrow payment
+   * @notice Deposit ETH or SafeERC20 to open a new escrow payment.
+   * @notice We don't white- or black-list, but we strongly discourage users from using ERC777 tokens
+   * @notice   and any ERC20 tokens which perform extra logic in their transfer functions. 
+   * @notice If the balance claiming transaction fails due to the token's contract error or malicious behavior, 
+   * @notice   it is not possible to try to claim the balance again.
    * @dev Escrow ID is generated automatically by the contract
    * @param input Escrow input (seller, marketplace, currency, and challenge period information)
    * @param arbitrator Arbitrator address (submit zero address to not set an arbitrator)

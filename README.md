@@ -26,12 +26,18 @@ To get local rpc accounts:
 yarn hardhat accounts
 ```
 
+To get the configured safe account:
+
+```bash
+yarn hardhat safe
+```
+
 ## Setup RPC Locally
 
 Run ganache server to run a local RPC:
 
 ```bash
-yarn hardhat node
+yarn hardhat node --no-deploy
 ```
 
 ## Deploy the Contracts
@@ -44,13 +50,20 @@ cp .env.example .env
 | KEY                 | VALUE                                            |
 |---------------------|--------------------------------------------------|
 | GNOSIS_SAFE_ADDRESS | Governance address multisig                      |
-| PRIVATE_KEY         | Deployer account                                 |
-| NODE_URL            | Infura, Alchemy or any node to deploy to mainnet |
+| MNEMONIC            | Account of one of the Gnosis Safe owners         |
+| SAFE_SERVICE_URL    | Gnosis safe service url (to submit tx proposals) |
+| UNICROW_FEE         | Unicrow fee (in bips)                            |
 
 Deploy the Unicrow contracts with your local rpc:
 
 ```bash
-yarn deploy:crow
+yarn deploy:local
+```
+
+Deploy the Unicrow contracts on Arbitrum One (via the Gnosis Safe):
+
+```bash
+yarn deploy:arbitrum
 ```
 
 ## Interact using a console

@@ -326,7 +326,7 @@ describe("UnicrowClaim", function () {
 
       await expect(unicrowClaimContract.connect(seller).claimMultiple([escrowId])).to.emit(
         unicrowClaimContract,
-        "Claim"
+        "ClaimMultiple"
       );
     });
 

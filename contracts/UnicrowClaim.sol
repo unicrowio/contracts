@@ -37,11 +37,11 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
 
     /// Emitted when multiple escrows are claimed
     /// @param escrows data of all escrows that were claimed
-    event Claim(ClaimEvent[] escrows);
+    event ClaimMultiple(ClaimEvent[] escrows);
 
     /// Emitted when a single escrow payment is claimed
     /// @param escrow data of the claimed escrow
-    event SingleClaim(ClaimEvent escrow);
+    event Claim(ClaimEvent escrow);
 
     /**
      * @param unicrow_ main escrow contract
@@ -129,7 +129,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
             events[i] = ClaimEvent(escrows[i], payments);
         }
 
-        emit Claim(events);
+        emit ClaimMultiple(events);
     }
 
     /// @inheritdoc IUnicrowClaim
@@ -183,7 +183,7 @@ contract UnicrowClaim is IUnicrowClaim, Context, ReentrancyGuard {
         }
 
         // Emit the event incl. final amounts
-        emit SingleClaim(ClaimEvent(escrowId, payments));
+        emit Claim(ClaimEvent(escrowId, payments));
 
         // Return the final amounts
         return [

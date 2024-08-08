@@ -48,8 +48,9 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
      * @param arbitrator Address of an arbitrator (zero is returned if no arbitrator was defined)
      * @param arbitratorFee Arbitrator's fee in bips
      * @param challengePeriod Initial challenge period in seconds
+     * @param paymentReference Payment or order reference
      */
-    event Pay(uint256 indexed escrowId, uint256 blockTime, Escrow escrow, address arbitrator, uint256 arbitratorFee, uint256 challengePeriod);
+    event Pay(uint256 indexed escrowId, uint256 blockTime, Escrow escrow, address arbitrator, uint256 arbitratorFee, uint256 challengePeriod, string paymentReference);
 
     /**
      * @notice Emitted when the buyer releases the payment manually (regardless of the challenge period)
@@ -199,7 +200,8 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
             challengeExtension: uint64(input.challengeExtension > 0 ? input.challengeExtension : input.challengePeriod),
             challengePeriodStart: uint64(block.timestamp), //challenge start
             challengePeriodEnd: uint64(block.timestamp + input.challengePeriod), //chalenge end
-            amount: amount
+            amount: amount,
+            paymentReference: input.paymentReference
         });
 
         // Store the escrow information
@@ -208,10 +210,10 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         // Increase the escrow id counter
         escrowIdCounter.increment();
 
-        emit Pay(escrowId, block.timestamp, escrow, arbitrator, arbitratorFee, input.challengePeriod);
+        emit Pay(escrowId, block.timestamp, escrow, arbitrator, arbitratorFee, input.challengePeriod, input.paymentReference);
     
         return escrowId;
-}
+    }
 
     /// @inheritdoc IUnicrow
     function refund(uint256 escrowId) external override nonReentrant {

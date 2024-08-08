@@ -67,6 +67,9 @@ struct Escrow {
 
     /// @dev amount in the token
     uint256 amount;
+
+    /// @dev Optional text reference can be used to identify the payment or provide information for an arbitrator
+    string paymentReference;
 }
 
 /// @dev Escrow parameters to be sent along with the deposit
@@ -91,6 +94,9 @@ struct EscrowInput {
 
     /// @dev Amount in token
     uint256 amount;
+
+    /// @dev Optional text reference can be used to identify the payment or provide information for an arbitrator
+    string paymentReference;
 }
 
 /// @dev Information about arbitrator proposed or assigned to an escrow.

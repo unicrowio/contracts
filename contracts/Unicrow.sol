@@ -48,9 +48,8 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
      * @param arbitrator Address of an arbitrator (zero is returned if no arbitrator was defined)
      * @param arbitratorFee Arbitrator's fee in bips
      * @param challengePeriod Initial challenge period in seconds
-     * @param paymentReference Payment or order reference
      */
-    event Pay(uint256 indexed escrowId, uint256 blockTime, Escrow escrow, address arbitrator, uint256 arbitratorFee, uint256 challengePeriod, string paymentReference);
+    event Pay(uint256 indexed escrowId, uint256 blockTime, Escrow escrow, address arbitrator, uint256 arbitratorFee, uint256 challengePeriod);
 
     /**
      * @notice Emitted when the buyer releases the payment manually (regardless of the challenge period)
@@ -210,7 +209,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         // Increase the escrow id counter
         escrowIdCounter.increment();
 
-        emit Pay(escrowId, block.timestamp, escrow, arbitrator, arbitratorFee, input.challengePeriod, input.paymentReference);
+        emit Pay(escrowId, block.timestamp, escrow, arbitrator, arbitratorFee, input.challengePeriod);
     
         return escrowId;
     }

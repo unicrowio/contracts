@@ -81,6 +81,8 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         unicrowDispute = UnicrowDispute(unicrowDispute_);
         governanceAddress = governanceAddress_;
         protocolFee = protocolFee_;
+
+        escrowIdCounter.increment();
     }
 
     /// Check that the governance contract is calling this
@@ -112,7 +114,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         EscrowInput calldata input,
         address arbitrator,
         uint16 arbitratorFee
-    ) external override payable nonReentrant {
+    ) external payable override nonReentrant returns (uint256) {
         // Get current escrow id from the incremental counter
         uint256 escrowId = escrowIdCounter.current();
 
@@ -197,7 +199,8 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
             challengeExtension: uint64(input.challengeExtension > 0 ? input.challengeExtension : input.challengePeriod),
             challengePeriodStart: uint64(block.timestamp), //challenge start
             challengePeriodEnd: uint64(block.timestamp + input.challengePeriod), //chalenge end
-            amount: amount
+            amount: amount,
+            paymentReference: input.paymentReference
         });
 
         // Store the escrow information
@@ -207,6 +210,8 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         escrowIdCounter.increment();
 
         emit Pay(escrowId, block.timestamp, escrow, arbitrator, arbitratorFee, input.challengePeriod);
+    
+        return escrowId;
     }
 
     /// @inheritdoc IUnicrow
@@ -216,8 +221,18 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         // Get escrow information from the contract's storage
         Escrow memory escrow = escrows[escrowId];
 
-        // Only seller can refund
-        require(sender == escrow.seller, "1-011");
+        Arbitrator memory arbitrator = unicrowArbitrator.getArbitratorData(
+            escrowId
+        );
+
+        // Only seller/arbitrator or a contract acting on behalf of seller/arbitrator can refund
+        require(
+            sender == escrow.seller ||
+                tx.origin == escrow.seller ||
+                sender == arbitrator.arbitrator ||
+                tx.origin == arbitrator.arbitrator,
+            "1-011"
+        );
 
         // Check that the escrow is not claimed yet
         require(escrow.claimed == 0, "0-005");

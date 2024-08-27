@@ -62,6 +62,11 @@ const userConfig: HardhatUserConfig = {
       url: "http://localhost:8545",
       chainId: 31337
     },
+    sepolia: {
+      ...sharedNetworkConfig,
+      url: "https://rpc2.sepolia.org",
+      chainId: 11155111
+    },
     arbitrum: {
       ...sharedNetworkConfig,
       url: "https://arb1.arbitrum.io/rpc",

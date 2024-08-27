@@ -54,16 +54,22 @@ cp .env.example .env
 | SAFE_SERVICE_URL    | Gnosis safe service url (to submit tx proposals) |
 | UNICROW_FEE         | Unicrow fee (in bips)                            |
 
-Deploy the Unicrow contracts with your local rpc:
+Deploy the Unicrow contracts (directly) on your local node:
 
 ```bash
 yarn deploy:local
 ```
 
+Deploy the Unicrow contracts (directly) on the Sepolia testnet:
+
+```bash
+yarn deploy:sepolia
+```
+
 Deploy the Unicrow contracts on Arbitrum One (via the Gnosis Safe):
 
 ```bash
-yarn deploy:arbitrum
+yarn deploy:arbitrum:viasafe
 ```
 
 ## Interact using a console

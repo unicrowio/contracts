@@ -6,8 +6,9 @@
     "build": "yarn clean && hardhat compile",
     "clean": "hardhat clean",
     "test": "hardhat test",
-    "deploy:local": "hardhat run ./scripts/deploy-local.ts --network localhost",
-    "deploy:arbitrum": "hardhat deploy --network arbitrum"
+    "deploy:local": "hardhat run ./scripts/deploy-direct.ts --network localhost",
+    "deploy:sepolia": "hardhat run ./scripts/deploy-direct.ts --network sepolia",
+    "deploy:arbitrum:viasafe": "hardhat deploy --network arbitrum"
   },
   "devDependencies": {
     "@ethersproject/address": "5.7.0",

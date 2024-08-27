@@ -18,31 +18,30 @@ async function main() {
 
   let transactionCount = await deployer.getTransactionCount();
 
-  const UnicrowContractAddress = getContractAddress({
+  const UnicrowAddress = getContractAddress({
     from: deployer.address,
-    nonce: transactionCount,
+    nonce: transactionCount++,
   })
 
-  console.log(`UnicrowContractAddress: ${UnicrowContractAddress}`);
+  console.log(`UnicrowAddress: ${UnicrowAddress}`);
 
   const UnicrowDisputeAddress = getContractAddress({
     from: deployer.address,
-    nonce: transactionCount + 1,
+    nonce: transactionCount++,
   })
 
   console.log(`UnicrowDispute: ${UnicrowDisputeAddress}`);
 
-
   const UnicrowArbitratorAddress = getContractAddress({
     from: deployer.address,
-    nonce: transactionCount + 2,
+    nonce: transactionCount++,
   })
 
   console.log(`UnicrowArbitrator: ${UnicrowArbitratorAddress}`);
 
   const UnicrowClaimAddress = getContractAddress({
     from: deployer.address,
-    nonce: transactionCount + 3
+    nonce: transactionCount++,
   })
 
   console.log(`UnicrowClaim: ${UnicrowClaimAddress}`);
@@ -60,7 +59,7 @@ async function main() {
   console.log(`Unicrow deployed to: ${unicrow.address}`);
 
   const unicrowDispute = await UnicrowDispute.deploy(
-    UnicrowContractAddress,
+    UnicrowAddress,
     UnicrowClaimAddress,
     UnicrowArbitratorAddress
   );
@@ -70,7 +69,7 @@ async function main() {
   console.log(`UnicrowDispute deployed to: ${unicrowDispute.address}`);
 
   const unicrowArbitrator = await UnicrowArbitrator.deploy(
-    UnicrowContractAddress,
+    UnicrowAddress,
     UnicrowClaimAddress
   );
 
@@ -79,7 +78,7 @@ async function main() {
   console.log(`UnicrowArbitrator deployed to: ${unicrowArbitrator.address}`);
 
   const unicrowClaim = await UnicrowClaim.deploy(
-    UnicrowContractAddress,
+    UnicrowAddress,
     UnicrowArbitratorAddress,
     GNOSIS_SAFE_ADDRESS
   );

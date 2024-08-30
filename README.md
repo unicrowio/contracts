@@ -66,6 +66,12 @@ Deploy the Unicrow contracts (directly) on the Sepolia testnet:
 yarn deploy:sepolia
 ```
 
+Deploy the Unicrow contracts (directly) on the Arbitrum Sepolia testnet:
+
+```bash
+yarn deploy:arbitrumSepolia
+```
+
 Deploy the Unicrow contracts on Arbitrum One (via the Gnosis Safe):
 
 ```bash

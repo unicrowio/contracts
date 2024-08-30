@@ -23,7 +23,7 @@ async function main() {
     nonce: transactionCount++,
   })
 
-  console.log(`UnicrowAddress: ${UnicrowAddress}`);
+  console.log(`Unicrow: ${UnicrowAddress}`);
 
   const UnicrowDisputeAddress = getContractAddress({
     from: deployer.address,

@@ -13,7 +13,14 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const { MNEMONIC, MNEMONIC_PATH, SAFE_SERVICE_URL, GNOSIS_SAFE_ADDRESS } = process.env;
+const {
+  MNEMONIC,
+  MNEMONIC_PATH,
+  SAFE_SERVICE_URL,
+  GNOSIS_SAFE_ADDRESS,
+  ETHERSCAN_API_KEY,
+  ARBISCAN_API_KEY
+} = process.env;
 
 setupSafeDeployer(
   Wallet.fromMnemonic(MNEMONIC!!, MNEMONIC_PATH),
@@ -77,6 +84,39 @@ const userConfig: HardhatUserConfig = {
       url: "https://arb1.arbitrum.io/rpc",
       chainId: 42161
     }
+  },
+  etherscan: {
+    apiKey: {
+      sepolia: ETHERSCAN_API_KEY!!,
+      arbitrumSepolia: ARBISCAN_API_KEY!!,
+      arbitrum: ARBISCAN_API_KEY!!,
+    },
+    customChains: [
+      {
+        network: "sepolia",
+        chainId: 11155111,
+        urls: {
+          apiURL: "https://api-sepolia.etherscan.io/api",
+          browserURL: "https://sepolia.etherscan.io"
+        }
+      },
+      {
+        network: "arbitrumSepolia",
+        chainId: 421614,
+        urls: {
+          apiURL: "https://api-sepolia.arbiscan.io/api",
+          browserURL: "https://sepolia.arbiscan.io/"
+        }
+      },
+      {
+        network: "arbitrum",
+        chainId: 42161,
+        urls: {
+          apiURL: "https://api.arbiscan.io/api",
+          browserURL: "https://arbiscan.io/"
+        }
+      },
+    ]
   },
   namedAccounts: {
     deployer: GNOSIS_SAFE_ADDRESS!!,

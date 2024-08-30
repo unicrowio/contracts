@@ -47,12 +47,14 @@ Setup environment variables:
 cp .env.example .env
 ```
 
-| KEY                 | VALUE                                            |
-|---------------------|--------------------------------------------------|
-| GNOSIS_SAFE_ADDRESS | Governance address multisig                      |
-| MNEMONIC            | Account of one of the Gnosis Safe owners         |
-| SAFE_SERVICE_URL    | Gnosis safe service url (to submit tx proposals) |
-| UNICROW_FEE         | Unicrow fee (in bips)                            |
+| KEY                 | VALUE                                                   |
+|---------------------|---------------------------------------------------------|
+| GNOSIS_SAFE_ADDRESS | Governance/fees address (can also be a normal address)  |
+| MNEMONIC            | Mnemonic of the wallet to be used for deployments       |
+| SAFE_SERVICE_URL    | Gnosis safe service url (to submit tx proposals)        |
+| UNICROW_FEE         | Unicrow fee (in bips)                                   |
+| ETHERSCAN_API_KEY   | Only used for contract verification                     |
+| ARBISCAN_API_KEY    | Only used for contract verification                     |
 
 Deploy the Unicrow contracts (directly) on your local node:
 

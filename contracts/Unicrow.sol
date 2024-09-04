@@ -118,8 +118,8 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
         // Get current escrow id from the incremental counter
         uint256 escrowId = escrowIdCounter.current();
 
-        // The address that sent the payment is set as a buyer
-        address buyer = _msgSender();
+        // If the buyer was set to zero address in the input, set 
+        address buyer = input.buyer == address(0) ? msg.sender : input.buyer;
 
         // Amount of the payment in ERC20 tokens
         uint amount = input.amount;

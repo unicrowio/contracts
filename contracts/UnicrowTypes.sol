@@ -74,6 +74,9 @@ struct Escrow {
 
 /// @dev Escrow parameters to be sent along with the deposit
 struct EscrowInput {
+    /// @dev who's the buyer, i.e. who can release the payment or be sent the funds back to in case of a refund. This should be explicitly defined esp. if pay() is called via another contract because in then msg.sender would not be the end user's EOA address but the contract address. Set to address(0) if msg.sender should be used.
+    address buyer;
+
     /// @dev who should receive the payment
     address seller;
 

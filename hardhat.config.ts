@@ -33,17 +33,7 @@ sharedNetworkConfig.accounts = {
   mnemonic: MNEMONIC!!
 };
 
-// This is a sample Hardhat task. To learn how to create your own go to
-// https://hardhat.org/guides/create-task.html
-task("accounts", "Prints the list of accounts", async (_, hre) => {
-  const accounts = await hre.ethers.getSigners();
-
-  for (const account of accounts) {
-    console.log(await account.address);
-  }
-});
-
-task("safe", "Prints the configured safe account for mainnet deployments", async (_, hre) => {
+task("safe", "Prints the configured safe (deployer and governance account)", async (_, hre) => {
   const { deployer } = await hre.getNamedAccounts();
   console.log(deployer);
 });

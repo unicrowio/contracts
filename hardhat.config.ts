@@ -65,7 +65,7 @@ const userConfig: HardhatUserConfig = {
   },
   networks: {
     localhost: {
-      ...sharedNetworkConfig,
+      // ...sharedNetworkConfig,
       url: "http://localhost:8545",
       chainId: 31337
     },

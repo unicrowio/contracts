@@ -86,11 +86,11 @@ async function main() {
   await unicrowClaim.deployed();
 
   console.log(`UnicrowClaim deployed to: ${unicrowClaim.address}`);
-  
-  const FakeToken = await ethers.getContractFactory("FakeToken");
-  const fakeToken = await FakeToken.deploy("FakeToken", "FTK");
-  await fakeToken.deployed();
-  console.log(`FakeToken deployed to: ${fakeToken.address}`);
+
+  // const FakeToken = await ethers.getContractFactory("FakeToken");
+  // const fakeToken = await FakeToken.deploy("FakeToken", "FTK");
+  // await fakeToken.deployed();
+  // console.log(`FakeToken deployed to: ${fakeToken.address}`);
 }
 
 main()

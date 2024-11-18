@@ -74,7 +74,7 @@ struct Escrow {
 
 /// @dev Escrow parameters to be sent along with the deposit
 struct EscrowInput {
-    /// @dev who's the buyer, i.e. who can release the payment or whom should a refund be sent to. Normally this would be msg.sender but if Unicrow.pay() is called is called via another contract it should be set explicitly to user's EOA. If set to address(0), it defaults to msg.sender
+    /// @dev who's the buyer, i.e. who can release the payment or whom should a refund be sent to. It should be set explicitly to user's EOA in case Unicrow.pay() is called via another contract
     address buyer;
 
     /// @dev who should receive the payment

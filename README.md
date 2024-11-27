@@ -62,22 +62,28 @@ Deploy the Unicrow contracts (directly) on your local node:
 yarn deploy:local
 ```
 
-Deploy the Unicrow contracts (directly) on the Sepolia testnet:
+Deploy the Unicrow contracts on Arbitrum One (via the Gnosis Safe):
 
 ```bash
-yarn deploy:sepolia
+yarn deploy:arbitrum:viasafe
 ```
 
-Deploy the Unicrow contracts (directly) on the Arbitrum Sepolia testnet:
+Deploy the Unicrow contracts (directly) on Arbitrum Sepolia testnet:
 
 ```bash
 yarn deploy:arbitrumSepolia
 ```
 
-Deploy the Unicrow contracts on Arbitrum One (via the Gnosis Safe):
+Deploy the Unicrow contracts on Base (via the Gnosis Safe):
 
 ```bash
-yarn deploy:arbitrum:viasafe
+yarn deploy:base:viasafe
+```
+
+Deploy the Unicrow contracts on Base Sepolia testnet (via the Gnosis Safe):
+
+```bash
+yarn deploy:baseSepolia:viasafe
 ```
 
 ## Interact using a console

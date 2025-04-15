@@ -15,7 +15,7 @@ async function main() {
   const UnicrowClaim = await ethers.getContractFactory("UnicrowClaim");
 
   console.log( `Deploying contracts with the account: ${deployer.address}`);
-
+  
   let transactionCount = await deployer.getTransactionCount();
 
   const UnicrowAddress = getContractAddress({

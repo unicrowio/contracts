@@ -154,7 +154,7 @@ contract Unicrow is ReentrancyGuard, IUnicrow, Context {
             // If the payment was made in ERC20 and not ETH, execute the transfer
             SafeERC20.safeTransferFrom(
                 IERC20(input.currency),
-                sender,
+                sender == address(0) ? _msgSender() : sender,
                 address(this),
                 amount
             );

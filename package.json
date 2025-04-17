@@ -9,7 +9,8 @@
     "deploy:local": "hardhat run ./scripts/deploy-direct.ts --network localhost",
     "deploy:sepolia": "hardhat run ./scripts/deploy-direct.ts --network sepolia",
     "deploy:arbitrumSepolia": "hardhat run ./scripts/deploy-direct.ts --network arbitrumSepolia",
-    "deploy:arbitrum:viasafe": "hardhat deploy --network arbitrum"
+    "deploy:arbitrum:viasafe": "hardhat deploy --network arbitrum",
+    "deploy:base": "hardhat run ./scripts/deploy-direct.ts --network base"
   },
   "devDependencies": {
     "@ethersproject/address": "5.7.0",
@@ -27,7 +28,7 @@
     "dotenv": "^16.0.0",
     "ethereum-waffle": "^3.4.0",
     "ethers": "^5.7.2",
-    "hardhat": "^2.6.4",
+    "hardhat": "^2.23.0",
     "hardhat-deploy": "^0.11.22",
     "hardhat-gas-reporter": "^1.0.8",
     "hardhat-safe-deployer": "github://unicrowio/hardhat-safe-deployer",

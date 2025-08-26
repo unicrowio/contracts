@@ -1,16 +1,16 @@
 {
   "name": "@unicrowio/contracts",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "license": "MIT",
   "scripts": {
     "build": "yarn clean && hardhat compile",
     "clean": "hardhat clean",
     "test": "hardhat test",
     "deploy:local": "hardhat run ./scripts/deploy-direct.ts --network localhost",
-    "deploy:sepolia": "hardhat run ./scripts/deploy-direct.ts --network sepolia",
     "deploy:arbitrumSepolia": "hardhat run ./scripts/deploy-direct.ts --network arbitrumSepolia",
     "deploy:arbitrum:viasafe": "hardhat deploy --network arbitrum",
-    "deploy:base": "hardhat run ./scripts/deploy-direct.ts --network base"
+    "deploy:base:viasafe": "hardhat deploy --network base",
+    "deploy:baseSepolia:viasafe": "hardhat deploy --network baseSepolia"
   },
   "devDependencies": {
     "@ethersproject/address": "5.7.0",

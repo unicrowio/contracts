@@ -66,17 +66,17 @@ const userConfig: HardhatUserConfig = {
       url: "http://localhost:8545",
       chainId: 31337
     },
-    sepolia: {
+    arbitrum: {
       ...sharedNetworkConfig,
-      url: "https://rpc2.sepolia.org",
-      chainId: 11155111
+      url: "https://arb1.arbitrum.io/rpc",
+      chainId: 42161
     },
     arbitrumSepolia: {
       ...sharedNetworkConfig,
       url: "https://sepolia-rollup.arbitrum.io/rpc",
       chainId: 421614
     },
-    arbitrum: {
+    base: {
       ...sharedNetworkConfig,
       url: "https://arb1.arbitrum.io/rpc",
       chainId: 42161
@@ -89,8 +89,8 @@ const userConfig: HardhatUserConfig = {
     baseSepolia: {
       ...sharedNetworkConfig,
       url: "https://sepolia.base.org",
-        chainId: 84532,
-      },
+      chainId: 84532,
+    },
   },
   etherscan: {
     apiKey: {
@@ -102,11 +102,11 @@ const userConfig: HardhatUserConfig = {
   },
     customChains: [
       {
-        network: "sepolia",
-        chainId: 11155111,
+        network: "arbitrum",
+        chainId: 42161,
         urls: {
-          apiURL: "https://api-sepolia.etherscan.io/api",
-          browserURL: "https://sepolia.etherscan.io"
+          apiURL: "https://api.arbiscan.io/api",
+          browserURL: "https://arbiscan.io/"
         }
   },
       {
@@ -118,11 +118,19 @@ const userConfig: HardhatUserConfig = {
         }
   },
       {
-        network: "arbitrum",
-        chainId: 42161,
+        network: "base",
+        chainId: 8453,
         urls: {
-          apiURL: "https://api.arbiscan.io/api",
-          browserURL: "https://arbiscan.io/"
+          apiURL: "https://api.basescan.org/api",
+          browserURL: "https://basescan.org/"
+        }
+      },
+      {
+        network: "baseSepolia",
+        chainId: 84532,
+        urls: {
+          apiURL: "https://api-sepolia.basescan.org/api",
+          browserURL: "https://basescan.org/"
         }
       },
       {

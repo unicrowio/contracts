@@ -19,21 +19,26 @@ const {
   SAFE_SERVICE_URL,
   GNOSIS_SAFE_ADDRESS,
   ETHERSCAN_API_KEY,
-  ARBISCAN_API_KEY
+  ARBISCAN_API_KEY,
+  BASESCAN_API_KEY,
+  REPORT_GAS
 } = process.env;
 
+if (MNEMONIC && MNEMONIC_PATH && GNOSIS_SAFE_ADDRESS && SAFE_SERVICE_URL) {
 setupSafeDeployer(
-  Wallet.fromMnemonic(MNEMONIC!!, MNEMONIC_PATH),
-  GNOSIS_SAFE_ADDRESS!!,
+    Wallet.fromMnemonic(MNEMONIC, MNEMONIC_PATH),
+    GNOSIS_SAFE_ADDRESS,
   SAFE_SERVICE_URL
-)
-
+  );
+}
 const sharedNetworkConfig: HttpNetworkUserConfig = {};
+if (MNEMONIC) {
 sharedNetworkConfig.accounts = {
-  mnemonic: MNEMONIC!!
+    mnemonic: MNEMONIC
 };
+}
 
-task("safe", "Prints the configured safe (deployer and governance account)", async (_, hre) => {
+task("safe", "Prints the configured safe account for mainnet deployments", async (_, hre) => {
   const { deployer } = await hre.getNamedAccounts();
   console.log(deployer);
 });
@@ -54,8 +59,10 @@ const userConfig: HardhatUserConfig = {
     ]
   },
   networks: {
+    hardhat: {
+      allowUnlimitedContractSize: true,
+    },
     localhost: {
-      // ...sharedNetworkConfig,
       url: "http://localhost:8545",
       chainId: 31337
     },
@@ -71,21 +78,28 @@ const userConfig: HardhatUserConfig = {
     },
     base: {
       ...sharedNetworkConfig,
-      url: "https://mainnet.base.org",
+      url: "https://arb1.arbitrum.io/rpc",
+      chainId: 42161
+    },
+    base: {
+      ...sharedNetworkConfig,
+      url: 'https://mainnet.base.org',
       chainId: 8453
     },
     baseSepolia: {
       ...sharedNetworkConfig,
       url: "https://sepolia.base.org",
-      chainId: 84532
-    }
+      chainId: 84532,
+    },
   },
   etherscan: {
     apiKey: {
-      sepolia: ETHERSCAN_API_KEY!!,
-      arbitrumSepolia: ARBISCAN_API_KEY!!,
-      arbitrum: ARBISCAN_API_KEY!!,
-    },
+      sepolia: ETHERSCAN_API_KEY || "",
+      arbitrumSepolia: ARBISCAN_API_KEY || "",
+      arbitrum: ARBISCAN_API_KEY || "",
+      base: BASESCAN_API_KEY || "",
+      baseSepolia: BASESCAN_API_KEY || ""
+  },
     customChains: [
       {
         network: "arbitrum",
@@ -94,7 +108,7 @@ const userConfig: HardhatUserConfig = {
           apiURL: "https://api.arbiscan.io/api",
           browserURL: "https://arbiscan.io/"
         }
-      },
+  },
       {
         network: "arbitrumSepolia",
         chainId: 421614,
@@ -102,7 +116,7 @@ const userConfig: HardhatUserConfig = {
           apiURL: "https://api-sepolia.arbiscan.io/api",
           browserURL: "https://sepolia.arbiscan.io/"
         }
-      },
+  },
       {
         network: "base",
         chainId: 8453,
@@ -119,30 +133,48 @@ const userConfig: HardhatUserConfig = {
           browserURL: "https://basescan.org/"
         }
       },
+      {
+        network: "base",
+        chainId: 8453,
+        urls: {
+          apiURL: "https://api.basescan.org/api",
+          browserURL: "https://basescan.org/"
+        }
+      },
+      {
+        network: "baseSepolia",
+        chainId: 84532,
+        urls: {
+          apiURL: "https://api-sepolia.basescan.org/api",
+          browserURL: "https://sepolia.basescan.org/"
+        }
+      },
     ]
   },
   namedAccounts: {
-    deployer: GNOSIS_SAFE_ADDRESS!!,
+    deployer: GNOSIS_SAFE_ADDRESS || "0x0000000000000000000000000000000000000001",
   },
   gasReporter: {
     currency: "USD",
+    enabled: REPORT_GAS ? true : false
   },
   typechain: {
     outDir: "types",
     target: "ethers-v6",
-    alwaysGenerateOverloads: false, // should overloads with full signatures like deposit(uint256) be generated always, even if there are no overloads?
-    externalArtifacts: ["artifacts/contracts/**/.json"], // optional array of glob patterns with external artifacts to process (for example external libs from node_modules)
+    alwaysGenerateOverloads: false,
+    externalArtifacts: ["artifacts/contracts/**/.json"],
   },
   external: process.env.HARDHAT_FORK
     ? {
       deployments: {
-        // process.env.HARDHAT_FORK will specify the network that the fork is made from.
-        // these lines allow it to fetch the deployments from the network being forked from both for node and deploy task
         hardhat: ['deployments/' + process.env.HARDHAT_FORK],
         localhost: ['deployments/' + process.env.HARDHAT_FORK],
       },
     }
-    : undefined
+    : undefined,
+  mocha: {
+    timeout: 100000
+  }
 };
 
-export default userConfig
+export default userConfig;
